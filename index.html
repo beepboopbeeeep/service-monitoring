@@ -1,104 +1,775 @@
-import requests
-import json
-import datetime
-import os
-import pytz
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>وضعیت لحظه‌ای سرورها</title>
+    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.0.3/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jalaali-js/dist/jalaali.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/moment/moment.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/moment-jalaali/build/moment-jalaali.js"></script>
 
-# ==========================================
-# تنظیمات سرویس‌ها (اینجا رو ادیت کن)
-# تاریخ‌ها باید به صورت میلادی باشند: YYYY-MM-DD
-# ==========================================
-SERVICES = [
-    {
-        "name": "سرویس مرکزی",
-        "url": "https://tellmeimright.taxyvy.workers.dev/panel",
-        "expiry": "2099-12-30",  # تاریخ دور برای نامحدود
-        "alias": "central", # یک شناسه انگلیسی کوتاه
-        "is_unlimited": True # اگر نامحدود است True بزار
-    },
-    {
-        "name": "سرویس سلطان",
-        "url": "https://hitmeintheyes.judiopu.workers.dev/panel",
-        "expiry": "2026-03-12", # معادل 21/12/1404
-        "alias": "soltan",
-        "is_unlimited": False
-    }
-]
-
-# فایل ذخیره اطلاعات
-DATA_FILE = "data.json"
-MAX_HISTORY = 672  # نگهداری تاریخچه برای حدود 1 ماه (اگر ساعتی یکبار اجرا شود)
-
-def check_service(url):
-    try:
-        response = requests.get(url, timeout=15)
-        text = response.text.lower()
-        
-        # لاجیک تشخیص وضعیت
-        if "panel" in text:
-            return "active", 100 # وضعیت سبز
-        elif "rate" in text or "1027" in text:
-            return "warning", 50 # وضعیت سنگینی بار
-        elif "1101" in text:
-            return "error", 0 # وضعیت غیرفعال
-        else:
-            return "error", 0 # هر چیز دیگر غیرفعال
-            
-    except Exception as e:
-        return "error", 0
-
-def load_data():
-    if os.path.exists(DATA_FILE):
-        with open(DATA_FILE, 'r', encoding='utf-8') as f:
-            return json.load(f)
-    return {"history": [], "current": []}
-
-def save_data(data):
-    with open(DATA_FILE, 'w', encoding='utf-8') as f:
-        json.dump(data, f, ensure_ascii=False, indent=2)
-
-def main():
-    # تنظیم زمان به وقت ایران
-    tehran_tz = pytz.timezone('Asia/Tehran')
-    now = datetime.datetime.now(tehran_tz)
-    timestamp_str = now.strftime("%Y-%m-%d %H:%M")
-    
-    data = load_data()
-    
-    current_status_list = []
-    history_point = {"time": timestamp_str, "services": {}}
-    
-    print(f"--- Check Started: {timestamp_str} ---")
-    
-    for service in SERVICES:
-        status, score = check_service(service["url"])
-        print(f"Checking {service['name']}... Status: {status}")
-        
-        # اطلاعات برای نمایش لحظه‌ای
-        service_info = {
-            "name": service["name"],
-            "status": status,
-            "expiry": service["expiry"],
-            "is_unlimited": service.get("is_unlimited", False)
+    <style>
+        :root {
+            --gold: #C7A46C;
+            --bg: #1E1E1E;
+            --bg-card: #252525;
+            --green: #4ade80;
+            --yellow: #facc15;
+            --orange: #fb923c;
+            --red: #f87171;
+            --text-muted: #9ca3af;
+            --card-border: rgba(255, 255, 255, 0.05);
+            --card-hover-border: rgba(199, 164, 108, 0.3);
         }
-        current_status_list.append(service_info)
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--bg) 0%, #2a2a2a 100%);
+            color: var(--gold);
+            font-family: 'Vazirmatn', sans-serif;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            background-attachment: fixed;
+        }
+
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        .header-section {
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+            z-index: 1;
+        }
+
+        h1 {
+            font-weight: 900;
+            margin-bottom: 10px;
+            text-shadow: 0 0 20px rgba(199, 164, 108, 0.4), 0 0 30px rgba(199, 164, 108, 0.2);
+            font-size: 2.5rem;
+            position: relative;
+            display: inline-block;
+        }
+
+        h1::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--gold), transparent);
+            border-radius: 2px;
+        }
+
+        .last-update {
+            color: var(--text-muted);
+            font-size: 1rem;
+            margin-top: 15px;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        /* بخش راهنما */
+        .guide-box {
+            background: rgba(199, 164, 108, 0.05);
+            border: 1px solid var(--gold);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 30px;
+            font-size: 0.95rem;
+            line-height: 1.8;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .guide-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(199, 164, 108, 0.1), transparent);
+            transition: left 0.7s;
+        }
+
+        .guide-box:hover::before {
+            left: 100%;
+        }
+
+        .guide-box ul {
+            padding-right: 20px;
+            margin: 0;
+        }
+
+        .guide-box li {
+            margin-bottom: 12px;
+            position: relative;
+            padding-right: 25px;
+        }
+
+        .guide-box li::before {
+            content: '•';
+            color: var(--gold);
+            position: absolute;
+            right: 0;
+            top: 0;
+        }
+
+        /* کارت‌های وضعیت */
+        .status-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            border: 1px solid var(--card-border);
+            transform: translateY(0);
+            animation: slideUp 0.6s ease-out;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--gold), var(--green), var(--yellow), var(--orange), var(--red));
+            opacity: 0.7;
+        }
+
+        .card:hover {
+            transform: translateY(-8px) scale(1.02);
+            border-color: var(--card-hover-border);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), 0 0 20px rgba(199, 164, 108, 0.2);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 15px;
+            position: relative;
+        }
+
+        .card-header::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 50px;
+            height: 2px;
+            background: var(--gold);
+        }
+
+        .service-name {
+            font-size: 1.3rem;
+            font-weight: bold;
+            position: relative;
+            padding-left: 25px;
+        }
+
+        .service-name::before {
+            content: '●';
+            color: var(--gold);
+            position: absolute;
+            left: 0;
+            top: 0;
+        }
+
+        .status-badge {
+            padding: 8px 16px;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: #1e1e1e;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            animation: pulse 2s infinite;
+        }
+
+        .status-active {
+            background-color: var(--green);
+            box-shadow: 0 0 15px var(--green);
+        }
+
+        .status-warning {
+            background-color: var(--yellow);
+            box-shadow: 0 0 15px var(--yellow);
+        }
+
+        .status-error {
+            background-color: var(--red);
+            box-shadow: 0 0 15px var(--red);
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            font-size: 1rem;
+            padding: 8px 0;
+            border-bottom: 1px dashed rgba(255, 255, 255, 0.05);
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+
+        .message-box {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            text-align: center;
+            border: 1px solid;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        .msg-success {
+            background: rgba(74, 222, 128, 0.08);
+            color: var(--green);
+            border: 1px solid var(--green);
+        }
+
+        .msg-warn {
+            background: rgba(250, 204, 21, 0.08);
+            color: var(--yellow);
+            border: 1px solid var(--yellow);
+        }
+
+        .msg-err {
+            background: rgba(248, 113, 113, 0.08);
+            color: var(--red);
+            border: 1px solid var(--red);
+        }
+
+        /* استایل تاریخ تمدید */
+        .expiry-box {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 8px;
+            font-weight: bold;
+            color: #1e1e1e;
+            margin-right: 5px;
+            animation: glow 3s infinite alternate;
+        }
+
+        .exp-normal {
+            color: var(--gold);
+            font-weight: normal;
+            padding: 0;
+            background: none;
+        }
+
+        .exp-yellow {
+            background-color: var(--yellow);
+        }
+
+        .exp-orange {
+            background-color: var(--orange);
+        }
+
+        .exp-red {
+            background-color: var(--red);
+            color: white;
+        }
+
+        /* نمودارها */
+        .charts-container {
+            display: flex;
+            flex-direction: column;
+            gap: 35px;
+            margin-top: 40px;
+        }
+
+        .chart-wrapper {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 25px;
+            border: 1px solid rgba(199, 164, 108, 0.2);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .chart-wrapper::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--gold), transparent);
+        }
+
+        .chart-title {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 1.2rem;
+            opacity: 0.9;
+            font-weight: 600;
+            position: relative;
+            padding-bottom: 10px;
+        }
+
+        .chart-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 2px;
+            background: var(--gold);
+            border-radius: 1px;
+        }
+
+        canvas {
+            max-height: 300px;
+            width: 100% !important;
+        }
+
+        /* فوتر */
+        footer {
+            margin-top: 60px;
+            text-align: center;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 30px;
+            width: 100%;
+            position: relative;
+        }
+
+        footer::before {
+            content: '';
+            position: absolute;
+            top: -1px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 2px;
+            background: var(--gold);
+        }
+
+        /* لودینگ */
+        #loading {
+            text-align: center;
+            font-size: 1.8rem;
+            margin-top: 100px;
+            color: var(--gold);
+            animation: pulse 1.5s infinite;
+        }
+
+        /* انیمیشن‌ها */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes glow {
+            0% { box-shadow: 0 0 5px rgba(0, 0, 0, 0.2); }
+            100% { box-shadow: 0 0 20px rgba(0, 0, 0, 0.4); }
+        }
+
+        /* واکنش‌گرایی */
+        @media (min-width: 768px) {
+            .status-grid {
+                grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            }
+
+            h1 {
+                font-size: 2.8rem;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .status-grid {
+                grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            }
+        }
+
+        /* افکت‌های تعاملی */
+        .card:hover::before {
+            animation: slideGlow 2s infinite;
+        }
+
+        @keyframes slideGlow {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 300% 50%; }
+        }
+
+        /* افکت‌های موس */
+        .service-name:hover {
+            text-shadow: 0 0 10px rgba(199, 164, 108, 0.5);
+        }
+
+        .status-badge:hover {
+            transform: scale(1.1);
+        }
+
+        /* افکت‌های پیشرفته */
+        .glow-effect {
+            position: relative;
+        }
+
+        .glow-effect::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: 20px;
+            box-shadow: inset 0 0 20px rgba(199, 164, 108, 0.1);
+            pointer-events: none;
+        }
+
+        /* افکت موجی */
+        .wave-effect {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .wave-effect::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(199, 164, 108, 0.1) 0%, transparent 70%);
+            animation: wave 4s linear infinite;
+            opacity: 0;
+        }
+
+        @keyframes wave {
+            0% { transform: rotate(0deg) scale(1); opacity: 0.7; }
+            100% { transform: rotate(360deg) scale(1.5); opacity: 0; }
+        }
+
+        .card:hover .wave-effect::before {
+            animation-play-state: running;
+        }
+
+        .wave-effect::before {
+            animation-play-state: paused;
+        }
+
+        .card:hover .wave-effect::before {
+            animation-play-state: running;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header-section">
+            <h1>وضعیت سرویس‌ها</h1>
+            <div class="last-update" id="lastUpdate">در حال دریافت اطلاعات...</div>
+        </div>
+
+        <div class="guide-box">
+            <ul>
+                <li><strong>پیام تبریک:</strong> اگر وضعیت «فعال» بود، سرویس شما با موفقیت کار می‌کند.</li>
+                <li><strong>سنگینی بار:</strong> اگر با پیام سنگینی بار مواجه شدید، نگران نباشید. سیستم بین ساعت ۳:۳۰ تا ۴:۰۰ بامداد (ایران) به صورت خودکار ریست می‌شود.</li>
+                <li><strong>قطعی سرویس:</strong> در صورت بروز هرگونه قطعی، روزهای از دست رفته به اعتبار شما اضافه می‌شود. ضرری نخواهید کرد.</li>
+                <li><strong>تخفیف ویژه:</strong> با معرفی دوستان خود، واجد شرایط تخفیف در تمدید ماهانه شوید.</li>
+                <li>برای تمدید، پیش از پایان تاریخ اقدام کنید تا سرویس قطع نشود.</li>
+            </ul>
+        </div>
+
+        <div id="loading">درحال بارگذاری...</div>
+        <div class="status-grid" id="statusContainer"></div>
+
+        <div class="charts-container">
+            <div class="chart-wrapper">
+                <div class="chart-title">وضعیت هفتگی (پایداری)</div>
+                <canvas id="weeklyChart"></canvas>
+            </div>
+            <div class="chart-wrapper">
+                <div class="chart-title">وضعیت ماهیانه</div>
+                <canvas id="monthlyChart"></canvas>
+            </div>
+        </div>
+
+        <footer>
+            طراحی شده با ❤️ | سیستم مانیتورینگ هوشمند
+        </footer>
+    </div>
+
+    <script>
+        // تابع تبدیل اعداد به فارسی
+        function toPersianNum(n) {
+            const farsiDigits = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
+            return n.toString().replace(/\d/g, x => farsiDigits[x]);
+        }
+
+        // تابع محاسبه روزهای باقی‌مانده و فرمت تاریخ شمسی
+        function calculateExpiry(expiryDateStr) {
+            const now = new Date();
+            const expiry = new Date(expiryDateStr);
+            const diffTime = expiry - now;
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            
+            // تبدیل به شمسی
+            moment.loadPersian({usePersianDigits: true});
+            const shamsiDate = moment(expiryDateStr, 'YYYY-MM-DD').format('jYYYY/jMM/jDD');
+
+            let statusClass = "exp-normal";
+            let text = `${toPersianNum(diffDays)} روز مانده`;
+
+            if (diffDays < 0) {
+                statusClass = "exp-red";
+                text = `${toPersianNum(Math.abs(diffDays))} روز گذشته`;
+            } else if (diffDays === 0) {
+                statusClass = "exp-orange";
+                text = "روز تمدید سرویس";
+            } else if (diffDays <= 10) {
+                statusClass = "exp-yellow";
+            }
+
+            return { shamsiDate, diffDays, text, statusClass };
+        }
+
+        async function fetchData() {
+            try {
+                // اضافه کردن timestamp برای جلوگیری از کش شدن فایل جیسون
+                const response = await fetch('data.json?t=' + new Date().getTime());
+                const data = await response.json();
+                
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('lastUpdate').innerText = `آخرین بروزرسانی: ${toPersianNum(moment(data.last_updated).format('jYYYY/jMM/jDD HH:mm'))}`;
+
+                renderCards(data.current);
+                renderCharts(data.history);
+
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('loading').innerText = "خطا در دریافت اطلاعات.";
+            }
+        }
+
+        function renderCards(services) {
+            const container = document.getElementById('statusContainer');
+            container.innerHTML = '';
+
+            services.forEach((service, index) => {
+                setTimeout(() => {
+                    let statusText, statusClass, message, msgClass;
+                    
+                    // لاجیک نمایش وضعیت
+                    if (service.status === 'active') {
+                        statusText = 'فعال';
+                        statusClass = 'status-active';
+                        message = 'تبریک! سرویس شما با موفقیت فعال است.';
+                        msgClass = 'msg-success';
+                    } else if (service.status === 'warning') {
+                        statusText = 'سنگینی بار';
+                        statusClass = 'status-warning';
+                        message = 'سنگینی بار روی سرور. منتظر ریست خودکار (۳:۳۰ تا ۴ بامداد) باشید.';
+                        msgClass = 'msg-warn';
+                    } else {
+                        statusText = 'غیرفعال';
+                        statusClass = 'status-error';
+                        message = 'سرویس غیرفعال است. لطفا به پشتیبانی پیام دهید.';
+                        msgClass = 'msg-err';
+                    }
+
+                    // لاجیک تاریخ
+                    let expiryHtml = '';
+                    if (service.is_unlimited) {
+                        expiryHtml = `<span>نامحدود</span>`;
+                    } else {
+                        const expData = calculateExpiry(service.expiry);
+                        expiryHtml = `<span class="expiry-box ${expData.statusClass}">${expData.text}</span> <small>(${expData.shamsiDate})</small>`;
+                    }
+
+                    const cardHtml = `
+                        <div class="card wave-effect">
+                            <div class="card-header">
+                                <span class="service-name">${service.name}</span>
+                                <span class="status-badge ${statusClass}">${statusText}</span>
+                            </div>
+                            <div class="info-row">
+                                <span>تاریخ تمدید:</span>
+                                <div>${expiryHtml}</div>
+                            </div>
+                            <div class="message-box ${msgClass}">
+                                ${message}
+                            </div>
+                        </div>
+                    `;
+                    container.innerHTML += cardHtml;
+                }, index * 200); // تاخیر 200ms بین نمایش هر کارت
+            });
+        }
+
+        function renderCharts(history) {
+            // آماده سازی داده ها برای چارت
+            const labels = history.map(h => toPersianNum(moment(h.time).format('HH:mm')));
+            
+            const datasets = [];
+            if(history.length > 0) {
+                const serviceNames = Object.keys(history[0].services);
+                
+                const colors = [
+                    { border: '#4ade80', bg: 'rgba(74, 222, 128, 0.2)' },
+                    { border: '#facc15', bg: 'rgba(250, 204, 21, 0.2)' },
+                    { border: '#38bdf8', bg: 'rgba(56, 189, 248, 0.2)' }
+                ];
+
+                serviceNames.forEach((name, index) => {
+                    const color = colors[index % colors.length];
+                    const dataPoints = history.map(h => h.services[name] || 0);
+                    
+                    datasets.push({
+                        label: name,
+                        data: dataPoints,
+                        borderColor: color.border,
+                        backgroundColor: color.bg,
+                        borderWidth: 3,
+                        tension: 0.4,
+                        fill: true,
+                        pointRadius: 0,
+                        pointHoverRadius: 6,
+                        pointBackgroundColor: color.border,
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2
+                    });
+                });
+            }
+
+            const options = {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        labels: { 
+                            color: '#C7A46C', 
+                            font: { family: 'Vazirmatn', size: 12 },
+                            usePointStyle: true,
+                            pointStyle: 'circle'
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(37, 37, 37, 0.9)',
+                        titleColor: '#C7A46C',
+                        bodyColor: '#C7A46C',
+                        borderColor: '#C7A46C',
+                        borderWidth: 1,
+                        cornerRadius: 8,
+                        displayColors: true,
+                        callbacks: {
+                            label: function(context) {
+                                const value = context.parsed.y;
+                                if(value == 100) return `${context.dataset.label}: فعال`;
+                                if(value == 50) return `${context.dataset.label}: کند`;
+                                if(value == 0) return `${context.dataset.label}: قطع`;
+                                return `${context.dataset.label}: ${value}%`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        ticks: { 
+                            color: '#9ca3af', 
+                            font: { family: 'Vazirmatn' }, 
+                            maxTicksLimit: 7 
+                        },
+                        grid: { 
+                            display: false 
+                        }
+                    },
+                    y: {
+                        ticks: { 
+                            color: '#9ca3af', 
+                            font: { family: 'Vazirmatn' }, 
+                            callback: function(value) {
+                                if(value == 100) return 'فعال';
+                                if(value == 50) return 'کند';
+                                if(value == 0) return 'قطع';
+                                return '';
+                            }
+                        },
+                        grid: { 
+                            color: 'rgba(255,255,255,0.05)' 
+                        },
+                        min: -10,
+                        max: 110
+                    }
+                },
+                interaction: {
+                    mode: 'index',
+                    intersect: false,
+                },
+                animation: {
+                    duration: 1000,
+                    easing: 'easeOutQuart'
+                }
+            };
+
+            // نمودار هفتگی
+            const ctxWeekly = document.getElementById('weeklyChart').getContext('2d');
+            new Chart(ctxWeekly, {
+                type: 'line',
+                data: { labels: labels, datasets: datasets },
+                options: options
+            });
+
+            // نمودار ماهانه (همان دیتا)
+            const ctxMonthly = document.getElementById('monthlyChart').getContext('2d');
+            new Chart(ctxMonthly, {
+                type: 'line',
+                data: { labels: labels, datasets: [...datasets] },
+                options: options
+            });
+        }
         
-        # اطلاعات برای نمودار
-        history_point["services"][service["name"]] = score
-
-    # آپدیت هیستوری
-    data["history"].append(history_point)
-    
-    # محدود کردن حجم هیستوری (حذف قدیمی‌ها)
-    if len(data["history"]) > MAX_HISTORY:
-        data["history"] = data["history"][-MAX_HISTORY:]
-    
-    # ذخیره وضعیت فعلی
-    data["current"] = current_status_list
-    data["last_updated"] = timestamp_str
-    
-    save_data(data)
-    print("--- Check Finished & Saved ---")
-
-if __name__ == "__main__":
-    main()
+        window.onload = fetchData;
+    </script>
+</body>
+</html>

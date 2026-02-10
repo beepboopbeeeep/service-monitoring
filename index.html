@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>وضعیت لحظه‌ای سرورها</title>
+    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
+    <style>
+        :root {
+            --bg-color: #1E1E1E;
+            --card-bg: #2a2a2a;
+            --accent-color: #C7A46C;
+            --text-color: #f0f0f0;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --danger: #EF4444;
+            --info: #3B82F6;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Vazirmatn', sans-serif;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 800px;
+            width: 100%;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            border-bottom: 2px solid var(--accent-color);
+            padding-bottom: 20px;
+        }
+
+        h1 {
+            color: var(--accent-color);
+            margin: 0;
+            font-size: 2rem;
+        }
+
+        .last-update {
+            font-size: 0.9rem;
+            opacity: 0.7;
+            margin-top: 10px;
+        }
+
+        .info-box {
+            background-color: rgba(199, 164, 108, 0.1);
+            border: 1px solid var(--accent-color);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 30px;
+            font-size: 0.95rem;
+            line-height: 1.8;
+        }
+
+        .info-box ul {
+            margin: 0;
+            padding-right: 20px;
+        }
+
+        .info-box li {
+            margin-bottom: 8px;
+        }
+
+        .server-card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            transition: transform 0.2s;
+            border-right: 5px solid var(--accent-color);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .server-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .server-name {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: var(--accent-color);
+        }
+
+        .status-badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* وضعیت‌ها */
+        .status-active { background-color: rgba(16, 185, 129, 0.2); color: var(--success); }
+        .status-warning { background-color: rgba(245, 158, 11, 0.2); color: var(--warning); }
+        .status-inactive { background-color: rgba(239, 68, 68, 0.2); color: var(--danger); }
+
+        .indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+        
+        .pulse {
+            animation: pulse-animation 2s infinite;
+        }
+
+        @keyframes pulse-animation {
+            0% { box-shadow: 0 0 0 0px rgba(16, 185, 129, 0.5); }
+            100% { box-shadow: 0 0 0 10px rgba(0, 0, 0, 0); }
+        }
+
+        .details-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            font-size: 0.9rem;
+            margin-top: 15px;
+            border-top: 1px solid #444;
+            padding-top: 15px;
+        }
+
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .detail-label {
+            opacity: 0.7;
+            font-size: 0.8rem;
+            margin-bottom: 5px;
+        }
+
+        .expiry-box {
+            font-weight: bold;
+            padding: 5px 10px;
+            border-radius: 6px;
+            display: inline-block;
+            width: fit-content;
+        }
+
+        /* استایل روزهای باقی مانده */
+        .days-normal { color: var(--text-color); }
+        .days-warning { background-color: rgba(245, 158, 11, 0.2); color: var(--warning); } /* زرد */
+        .days-today { background-color: rgba(249, 115, 22, 0.2); color: #F97316; } /* نارنجی */
+        .days-overdue { background-color: rgba(239, 68, 68, 0.2); color: var(--danger); } /* قرمز */
+
+        /* نمودار کپسولی */
+        .uptime-bar {
+            display: flex;
+            gap: 3px;
+            margin-top: 15px;
+            justify-content: flex-end;
+        }
+        
+        .uptime-pill {
+            width: 6px;
+            height: 20px;
+            border-radius: 2px;
+            background-color: #444;
+        }
+        .pill-active { background-color: var(--success); }
+        .pill-warning { background-color: var(--warning); }
+        .pill-inactive { background-color: var(--danger); }
+
+        .loading {
+            text-align: center;
+            padding: 50px;
+            color: var(--accent-color);
+        }
+        
+        /* اعداد فارسی */
+        @font-face {
+            font-family: 'Vazirmatn';
+            font-feature-settings: "ss01";
+            /* این تنظیم باعث می‌شود اعداد فارسی شوند اگر فونت ساپورت کند، 
+               اما برای اطمینان ما از اسکریپت تبدیل عدد استفاده می‌کنیم */
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>وضعیت لحظه‌ای سرورها</h1>
+            <div class="last-update" id="last-update-time">در حال دریافت اطلاعات...</div>
+        </header>
+
+        <div class="info-box">
+            <ul>
+                <li><strong>وضعیت فعال:</strong> سرویس شما با موفقیت در حال فعالیت است. ✅</li>
+                <li><strong>سنگینی بار سرور:</strong> نگران نباشید! این محدودیت به صورت خودکار بین ساعت ۰۳:۳۰ تا ۰۴:۰۰ بامداد (ایران) ریست می‌شود. ⏳</li>
+                <li><strong>وضعیت غیرفعال:</strong> لطفاً جهت بررسی با پشتیبانی تماس بگیرید. 📞</li>
+                <li>در صورت بروز اختلال سراسری، روزهای قطعی به اعتبار سرویس شما <strong>اضافه خواهد شد</strong>. نگران ضرر مالی نباشید.</li>
+                <li>تا قبل از رسیدن تاریخ اتمام، نسبت به تمدید اقدام کنید.</li>
+                <li style="color: var(--accent-color); font-weight: bold;">✨ با معرفی دوستان خود، واجد شرایط تخفیف تمدید ماهیانه شوید!</li>
+            </ul>
+        </div>
+
+        <div id="servers-container">
+            <div class="loading">در حال بارگذاری وضعیت سرورها...</div>
+        </div>
+    </div>
+
+    <script>
+        // تابع تبدیل اعداد انگلیسی به فارسی
+        function toPersianNum(num) {
+            const persian = {
+                '0': '۰', '1': '۱', '2': '۲', '3': '۳', '4': '۴', 
+                '5': '۵', '6': '۶', '7': '۷', '8': '۸', '9': '۹'
+            };
+            return String(num).replace(/[0-9]/g, w => persian[w]);
+        }
+
+        fetch('status_data.json')
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('last-update-time').innerText = 'آخرین بروزرسانی: ' + toPersianNum(data.last_updated);
+                const container = document.getElementById('servers-container');
+                container.innerHTML = '';
+
+                data.servers.forEach(server => {
+                    // تعیین استایل وضعیت
+                    let statusClass = 'status-inactive';
+                    let indicatorClass = '';
+                    let indicatorColor = 'var(--danger)';
+                    
+                    if (server.status_code === 'active') {
+                        statusClass = 'status-active';
+                        indicatorClass = 'pulse';
+                        indicatorColor = 'var(--success)';
+                    } else if (server.status_code === 'warning') {
+                        statusClass = 'status-warning';
+                        indicatorColor = 'var(--warning)';
+                    }
+
+                    // تعیین منطق تاریخ
+                    let daysText = '';
+                    let daysClass = 'days-normal';
+                    let expiryDisplay = toPersianNum(server.expiry_date);
+
+                    if (server.days_left === 9999) {
+                        daysText = '∞';
+                        expiryDisplay = 'نامحدود';
+                    } else {
+                        if (server.days_left > 0) {
+                            daysText = `${toPersianNum(server.days_left)} روز مانده`;
+                            if (server.days_left <= 10) daysClass = 'days-warning'; // زرد
+                        } else if (server.days_left === 0) {
+                            daysText = 'روز تمدید سرویس';
+                            daysClass = 'days-today'; // نارنجی
+                        } else {
+                            daysText = `${toPersianNum(Math.abs(server.days_left))} روز گذشته`;
+                            daysClass = 'days-overdue'; // قرمز
+                        }
+                    }
+
+                    // ساخت هیستوری بار (کپسول‌ها)
+                    let historyHtml = '<div class="uptime-bar" title="وضعیت چک‌های اخیر">';
+                    server.history.forEach(stat => {
+                        let pillClass = 'pill-inactive';
+                        if(stat === 'active') pillClass = 'pill-active';
+                        if(stat === 'warning') pillClass = 'pill-warning';
+                        historyHtml += `<div class="uptime-pill ${pillClass}"></div>`;
+                    });
+                    historyHtml += '</div>';
+
+                    // HTML کارت
+                    const card = `
+                        <div class="server-card">
+                            <div class="card-header">
+                                <div class="server-name">${server.name}</div>
+                                <div class="status-badge ${statusClass}">
+                                    <span class="indicator ${indicatorClass}" style="background-color: ${indicatorColor}"></span>
+                                    ${server.status_text}
+                                </div>
+                            </div>
+                            <div class="details-grid">
+                                <div class="detail-item">
+                                    <span class="detail-label">تاریخ تمدید</span>
+                                    <span>${expiryDisplay}</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">مهلت باقی مانده</span>
+                                    <span class="expiry-box ${daysClass}">${daysText}</span>
+                                </div>
+                            </div>
+                            ${historyHtml}
+                        </div>
+                    `;
+                    container.innerHTML += card;
+                });
+            })
+            .catch(error => {
+                document.getElementById('servers-container').innerHTML = 
+                    '<div style="text-align:center; color: var(--danger)">خطا در دریافت اطلاعات. لطفا صفحه را رفرش کنید.</div>';
+                console.error('Error:', error);
+            });
+    </script>
+</body>
+</html>

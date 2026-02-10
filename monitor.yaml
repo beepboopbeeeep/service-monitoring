@@ -1,29 +1,38 @@
-name: Monitoring & Uptime Check
+name: Server Monitor Check
 
 on:
   schedule:
-    - cron: '*/5 * * * *'  # هر 5 دقیقه
-  workflow_dispatch:  # امکان اجرای دستی
+    - cron: "*/15 * * * *" # اجرا هر ۱۵ دقیقه
+  workflow_dispatch: # قابلیت اجرای دستی دکمه‌ای
+
+permissions:
+  contents: write
 
 jobs:
-  check-services:
+  build:
     runs-on: ubuntu-latest
-    
+
     steps:
-    - uses: actions/checkout@v3
-    
-    - name: Setup Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '18'
-    
-    - name: Check Services
-      run: node check-services.js
-    
-    - name: Update Dashboard
-      run: |
-        git config --global user.name 'github-actions'
-        git config --global user.email 'github-actions@github.com'
-        git add data/ README.md
-        git diff --quiet && git diff --staged --quiet || git commit -m "Update uptime data [$(date)]"
-        git push
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Install dependencies
+        run: |
+          pip install requests jdatetime
+
+      - name: Run Monitor Script
+        run: python monitor.py
+
+      - name: Commit and Push changes
+        run: |
+          git config --global user.name "Monitor Bot"
+          git config --global user.email "bot@monitor.com"
+          git add status_data.json
+          # اگر تغییری نباشه خطا نمیده
+          git commit -m "Update server status" || exit 0
+          git push

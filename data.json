@@ -1,0 +1,25 @@
+{
+  "last_updated": "23:17 - 2026/02/10",
+  "services": [
+    {
+      "id": 1,
+      "name": "سرویس مرکزی",
+      "status": "active",
+      "expiry_date": "unlimited",
+      "days_left": 9999,
+      "history": [
+        1
+      ]
+    },
+    {
+      "id": 2,
+      "name": "سرویس سلطان",
+      "status": "inactive",
+      "expiry_date": "1404/12/21",
+      "days_left": 30,
+      "history": [
+        0
+      ]
+    }
+  ]
+}

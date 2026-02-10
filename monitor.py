@@ -1,33 +1,35 @@
 import requests
 import json
 import os
-from datetime import datetime
 import jdatetime
 import pytz
+from datetime import datetime
 
 # تنظیمات
 SERVICES_FILE = 'services.json'
 DATA_FILE = 'data.json'
-HISTORY_LIMIT = 60  # ذخیره 60 تا چک اخیر برای نمودارها
+HISTORY_LIMIT = 30  # تعداد نقاط داده برای نمودار (مثلاً ۳۰ چک آخر)
 
 def get_status(url):
     try:
         response = requests.get(url, timeout=10)
         content = response.text
         
+        # لاجیک تشخیص وضعیت طبق درخواست
         if "panel" in content:
-            return "active", 200
+            return "active", 1.0  # 1.0 = 100% health
         elif "rate" in content or "1027" in content:
-            return "warning", 429
+            return "warning", 0.5 # 0.5 = 50% health
         else:
-            return "inactive", 500
+            return "inactive", 0.0 # 0.0 = 0% health
     except:
-        return "inactive", 0
+        return "inactive", 0.0
 
 def calculate_days_left(expiry_str):
     if expiry_str == "unlimited":
         return 9999
     
+    # استفاده از تاریخ امروز ایران
     today = jdatetime.date.today()
     try:
         y, m, d = map(int, expiry_str.split('/'))
@@ -42,40 +44,67 @@ def update_data():
     with open(SERVICES_FILE, 'r', encoding='utf-8') as f:
         services = json.load(f)
     
-    # بارگذاری دیتای قبلی (برای حفظ تاریخچه نمودار)
+    # بارگذاری دیتای قبلی برای حفظ تاریخچه
     if os.path.exists(DATA_FILE):
         with open(DATA_FILE, 'r', encoding='utf-8') as f:
             old_data = json.load(f)
-            history_map = {s['id']: s.get('history', []) for s in old_data['services']}
+            # نگاشت تاریخچه قبلی سرویس‌ها
+            service_history_map = {s['id']: s.get('history', []) for s in old_data.get('services', [])}
+            # نگاشت تاریخچه کلی سیستم
+            global_history = old_data.get('global_history', [])
     else:
-        history_map = {}
+        service_history_map = {}
+        global_history = []
 
-    timestamp = datetime.now(pytz.timezone('Asia/Tehran')).strftime("%H:%M - %Y/%m/%d")
+    # زمان فعلی به شمسی
+    ir_tz = pytz.timezone('Asia/Tehran')
+    now_ir = datetime.now(ir_tz)
+    # فرمت: ۱۴۰۳/۰۸/۱۲ - ۲۲:۳۰
+    j_date = jdatetime.datetime.fromgregorian(datetime=now_ir)
+    timestamp_str = j_date.strftime("%Y/%m/%d - %H:%M")
     
     processed_services = []
+    total_health_score = 0
     
     for service in services:
-        status, code = get_status(service['url'])
+        status, health_score = get_status(service['url'])
         days_left = calculate_days_left(service['expiry'])
+        total_health_score += health_score
         
-        # مدیریت تاریخچه برای نمودار (1: فعال، 0.5: وارنینگ، 0: غیرفعال)
-        history = history_map.get(service['id'], [])
-        chart_val = 1 if status == "active" else (0.5 if status == "warning" else 0)
-        history.append(chart_val)
-        if len(history) > HISTORY_LIMIT:
-            history.pop(0)
+        # مدیریت تاریخچه اختصاصی هر سرویس (برای نمودار کوچک داخل کارت)
+        s_history = service_history_map.get(service['id'], [])
+        s_history.append(health_score)
+        if len(s_history) > 20: # فقط ۲۰ نقطه آخر برای کارت‌های کوچک کافیه
+            s_history.pop(0)
 
         processed_services.append({
             "id": service['id'],
             "name": service['name'],
-            "status": status, # active, warning, inactive
+            "status": status, 
             "expiry_date": service['expiry'],
             "days_left": days_left,
-            "history": history
+            "history": s_history
         })
 
+    # محاسبه وضعیت کلی سیستم (میانگین سلامت همه سرویس‌ها)
+    if services:
+        system_average = round((total_health_score / len(services)) * 100, 1)
+    else:
+        system_average = 0
+
+    # ذخیره در تاریخچه کلی (برای نمودارهای اصلی بالا)
+    global_history.append({
+        "time": j_date.strftime("%H:%M"),
+        "score": system_average
+    })
+    
+    # محدود کردن تاریخچه کلی به مثلا ۵۰ نقطه آخر که نمودار خیلی فشرده نشه
+    if len(global_history) > 50:
+        global_history.pop(0)
+
     final_data = {
-        "last_updated": timestamp,
+        "last_updated": timestamp_str,
+        "global_history": global_history,
         "services": processed_services
     }
 

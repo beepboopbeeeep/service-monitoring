@@ -3,176 +3,183 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>وضعیت لحظه‌ای سرورها</title>
-    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
+    <title>Network Operations Center</title>
+    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
-            --bg-color: #1E1E1E;
-            --card-bg: #2a2a2a;
-            --accent-color: #C7A46C;
-            --text-color: #f0f0f0;
-            --success: #10B981;
-            --warning: #F59E0B;
-            --danger: #EF4444;
+            --bg: #0f172a; --card: #1e293b; --accent: #38bdf8;
+            --success: #10b981; --warn: #f59e0b; --danger: #ef4444; --text: #f1f5f9;
         }
-
         body {
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            font-family: 'Vazirmatn', sans-serif;
-            margin: 0; padding: 20px;
-            display: flex; flex-direction: column; align-items: center;
+            background-color: var(--bg); color: var(--text); font-family: 'Vazirmatn', sans-serif;
+            margin: 0; padding: 20px; line-height: 1.6;
         }
-
-        .container { max-width: 900px; width: 100%; }
-
-        header { text-align: center; margin-bottom: 30px; border-bottom: 2px solid var(--accent-color); padding-bottom: 15px; }
+        .container { max-width: 1100px; margin: 0 auto; }
         
-        h1 { color: var(--accent-color); margin: 0; }
+        /* Header & Stats */
+        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        .live-indicator { display: flex; align-items: center; gap: 8px; font-size: 0.9rem; color: var(--success); }
+        .dot { width: 10px; height: 10px; background: var(--success); border-radius: 50%; box-shadow: 0 0 10px var(--success); animation: pulse 1.5s infinite; }
 
-        .info-box {
-            background: rgba(199, 164, 108, 0.05);
-            border: 1px dashed var(--accent-color);
-            border-radius: 12px; padding: 15px; margin-bottom: 25px;
-            font-size: 0.9rem; line-height: 1.7;
+        .top-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 30px; }
+        .stat-card { background: var(--card); padding: 20px; border-radius: 16px; border: 1px solid #334155; text-align: center; }
+        .stat-card h3 { margin: 0; font-size: 0.8rem; opacity: 0.7; }
+        .stat-card p { margin: 10px 0 0; font-size: 1.8rem; font-weight: bold; color: var(--accent); }
+
+        /* Charts Section */
+        .charts-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(450px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        .chart-box { background: var(--card); padding: 20px; border-radius: 20px; border: 1px solid #334155; height: 250px; }
+        .chart-box h4 { margin: 0 0 15px; font-size: 0.9rem; border-right: 3px solid var(--accent); padding-right: 10px; }
+
+        /* Creative Tips Section */
+        .creative-tips { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin-bottom: 40px; }
+        .tip-card { 
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            padding: 20px; border-radius: 15px; border-bottom: 4px solid var(--accent);
+            transition: transform 0.3s; cursor: default;
         }
+        .tip-card:hover { transform: translateY(-5px); }
+        .tip-icon { font-size: 2rem; margin-bottom: 10px; display: block; }
+        .tip-card h5 { margin: 0 0 10px; color: var(--accent); }
+        .tip-card p { margin: 0; font-size: 0.85rem; opacity: 0.8; }
 
-        .server-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 20px; }
-
-        .server-card {
-            background: var(--card-bg); border-radius: 15px; padding: 20px;
-            position: relative; border: 1px solid #333;
-        }
-
-        .card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; }
+        /* Server Cards */
+        .server-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; }
+        .server-card { background: var(--card); border-radius: 18px; padding: 20px; border: 1px solid #334155; transition: 0.3s; }
+        .server-card:hover { border-color: var(--accent); }
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .status-pill { padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: bold; }
+        .pill-active { background: rgba(16, 185, 129, 0.2); color: var(--success); }
+        .pill-inactive { background: rgba(239, 68, 68, 0.2); color: var(--danger); }
         
-        .server-name { font-size: 1.2rem; font-weight: bold; color: var(--accent-color); }
+        .sparkline-container { height: 50px; margin: 15px 0; }
 
-        .status-badge {
-            padding: 4px 12px; border-radius: 8px; font-size: 0.85rem; font-weight: bold;
-            display: flex; align-items: center; gap: 6px;
-        }
-
-        .status-active { background: rgba(16, 185, 129, 0.15); color: var(--success); }
-        .status-warning { background: rgba(245, 158, 11, 0.15); color: var(--warning); }
-        .status-inactive { background: rgba(239, 68, 68, 0.15); color: var(--danger); }
-
-        .chart-container { height: 80px; width: 100%; margin: 15px 0; }
-
-        .stats-row { display: flex; justify-content: space-between; font-size: 0.85rem; border-top: 1px solid #383838; padding-top: 10px; }
-        
-        .expiry-tag { padding: 2px 8px; border-radius: 4px; font-weight: bold; }
-        .days-warn { color: var(--warning); background: rgba(245, 158, 11, 0.1); }
-        .days-critical { color: var(--danger); background: rgba(239, 68, 68, 0.1); }
-
-        .pulse {
-            width: 8px; height: 8px; border-radius: 50%; background: currentColor;
-            animation: blink 1.5s infinite;
-        }
-        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
+        @media (max-width: 600px) { .charts-grid { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
 
 <div class="container">
     <header>
-        <h1>وضعیت لحظه‌ای سرورها</h1>
-        <div id="update-time" style="opacity: 0.6; font-size: 0.8rem; margin-top: 8px;"></div>
+        <div>
+            <h1 style="margin:0; font-size: 1.5rem;">داشبورد پایداری شبکه</h1>
+            <div id="last-update" style="font-size: 0.8rem; opacity: 0.6;"></div>
+        </div>
+        <div class="live-indicator">
+            <div class="dot"></div> مانیتورینگ زنده فعال است
+        </div>
     </header>
 
-    <div class="info-box">
-        • <b>سرویس فعال:</b> تبریک! سرویس شما با موفقیت در حال فعالیت است. ✅<br>
-        • <b>سنگینی بار:</b> نگران نباشید، محدودیت‌ها ساعت ۰۳:۳۰ تا ۰۴:۰۰ بامداد ریست می‌شوند. ⏳<br>
-        • <b>ضمانت:</b> هرگونه قطعی به روزهای باقی‌مانده شما اضافه خواهد شد. 💎
+    <div class="top-stats">
+        <div class="stat-card"><h3>کل سرویس‌ها</h3><p id="total-count">۰</p></div>
+        <div class="stat-card"><h3>آپتایم میانگین</h3><p id="avg-uptime">۰٪</p></div>
+        <div class="stat-card"><h3>وضعیت سیستم</h3><p style="color:var(--success)">پایدار</p></div>
     </div>
 
-    <div id="server-grid" class="server-grid">
+    <div class="charts-grid">
+        <div class="chart-box"><h4>روند پایداری ۷ روز اخیر</h4><canvas id="weeklyChart"></canvas></div>
+        <div class="chart-box"><h4>پایداری ۳۰ روزه کل سیستم</h4><canvas id="monthlyChart"></canvas></div>
+    </div>
+
+    <div class="creative-tips">
+        <div class="tip-card">
+            <span class="tip-icon">🚀</span>
+            <h5>ترافیک هوشمند</h5>
+            <p>سرویس‌ها به صورت خودکار بین نودهای مختلف جابجا می‌شوند تا سرعت شما همیشه در بالاترین سطح بماند.</p>
         </div>
+        <div class="tip-card" style="border-color: var(--warn);">
+            <span class="tip-icon">🛡️</span>
+            <h5>امنیت لایه ۷</h5>
+            <p>تمام اتصال‌ها با پروتکل‌های نوین رمزنگاری شده‌اند. حریم خصوصی شما خط قرمز ماست.</p>
+        </div>
+        <div class="tip-card" style="border-color: var(--success);">
+            <span class="tip-icon">💎</span>
+            <h5>گارانتی بازگشت</h5>
+            <p>در صورت افت پایداری به زیر ۹۹٪، زمان هدیه به صورت خودکار به اشتراک شما اضافه خواهد شد.</p>
+        </div>
+    </div>
+
+    <div id="server-grid" class="server-grid"></div>
 </div>
 
 <script>
-    function toPersian(num) {
-        const p = {'0':'۰','1':'۱','2':'۲','3':'۳','4':'۴','5':'۵','6':'۶','7':'۷','8':'۸','9':'۹'};
-        return String(num).replace(/[0-9]/g, s => p[s]);
-    }
+    const toPersian = n => String(n).replace(/\d/g, d => '۰۱۲۳۴۵۶۷۸۹'[d]);
 
-    fetch('status_data.json')
+    fetch('status_data.json?v=' + Date.now())
         .then(r => r.json())
         .then(data => {
-            document.getElementById('update-time').innerText = 'بروزرسانی: ' + toPersian(data.last_updated);
+            document.getElementById('last-update').innerText = 'بروزرسانی: ' + toPersian(data.last_updated);
+            document.getElementById('total-count').innerText = toPersian(data.servers.length);
+            
+            // رسم نمودارهای کلی
+            const days = Object.keys(data.global_history);
+            const scores = Object.values(data.global_history);
+            
+            document.getElementById('avg-uptime').innerText = toPersian(scores[scores.length-1] || 0) + '٪';
+
+            renderMainChart('weeklyChart', days.slice(-7), scores.slice(-7), '#38bdf8');
+            renderMainChart('monthlyChart', days, scores, '#818cf8');
+
+            // رندر کارت‌های سرور
             const grid = document.getElementById('server-grid');
-            grid.innerHTML = '';
-
             data.servers.forEach((s, idx) => {
-                const statusMap = {
-                    'active': { class: 'status-active', text: s.status_text },
-                    'warning': { class: 'status-warning', text: s.status_text },
-                    'inactive': { class: 'status-inactive', text: s.status_text }
-                };
-                const config = statusMap[s.status_code] || statusMap['inactive'];
-
-                let expiryHtml = '';
-                if(s.days_left === 9999) expiryHtml = 'نامحدود';
-                else {
-                    let c = '';
-                    if(s.days_left <= 10 && s.days_left > 0) c = 'days-warn';
-                    else if(s.days_left <= 0) c = 'days-critical';
-                    expiryHtml = `<span class="expiry-tag ${c}">${toPersian(s.days_left)} روز</span>`;
-                }
-
-                const card = `
+                const isUp = s.status_code === 'active';
+                grid.innerHTML += `
                     <div class="server-card">
-                        <div class="card-top">
-                            <div class="server-name">${s.name}</div>
-                            <div class="status-badge ${config.class}">
-                                <div class="pulse"></div> ${config.text}
-                            </div>
+                        <div class="card-header">
+                            <span style="font-weight:bold">${s.name}</span>
+                            <span class="status-pill ${isUp ? 'pill-active' : 'pill-inactive'}">
+                                ${isUp ? '● آنلاین' : '○ در دسترس نیست'}
+                            </span>
                         </div>
-                        <div class="chart-container">
-                            <canvas id="chart-${idx}"></canvas>
-                        </div>
-                        <div class="stats-row">
-                            <span>تاریخ تمدید: ${toPersian(s.expiry_date)}</span>
-                            <span>وضعیت اعتبار: ${expiryHtml}</span>
+                        <div class="sparkline-container"><canvas id="spark-${idx}"></canvas></div>
+                        <div style="font-size:0.8rem; opacity:0.7; display:flex; justify-content:space-between">
+                            <span>تاریخ انقضا: ${toPersian(s.expiry_date)}</span>
+                            <span>وضعیت: ${s.status_text}</span>
                         </div>
                     </div>
                 `;
-                grid.innerHTML += card;
-
-                // رسم نمودار بعد از اضافه شدن به DOM
-                setTimeout(() => {
-                    const ctx = document.getElementById(`chart-${idx}`).getContext('2d');
-                    // تبدیل وضعیت‌ها به عدد برای نمودار (active=2, warning=1, inactive=0)
-                    const chartData = s.history.map(h => h === 'active' ? 2 : (h === 'warning' ? 1 : 0));
-                    
-                    new Chart(ctx, {
-                        type: 'line',
-                        data: {
-                            labels: chartData,
-                            datasets: [{
-                                data: chartData,
-                                borderColor: s.status_code === 'active' ? '#10B981' : (s.status_code === 'warning' ? '#F59E0B' : '#EF4444'),
-                                borderWidth: 2,
-                                fill: true,
-                                backgroundColor: 'rgba(199, 164, 108, 0.05)',
-                                tension: 0.4,
-                                pointRadius: 0
-                            }]
-                        },
-                        options: {
-                            responsive: true,
-                            maintainAspectRatio: false,
-                            plugins: { legend: { display: false } },
-                            scales: { 
-                                x: { display: false }, 
-                                y: { display: false, min: 0, max: 2.5 } 
-                            }
-                        }
-                    });
-                }, 100);
+                
+                setTimeout(() => renderSparkline(`spark-${idx}`, s.history, isUp ? '#10b981' : '#ef4444'), 100);
             });
         });
+
+    function renderMainChart(id, labels, data, color) {
+        new Chart(document.getElementById(id), {
+            type: 'line',
+            data: {
+                labels: labels.map(l => l.split('/')[2]), // فقط نمایش روز
+                datasets: [{
+                    data: data, borderColor: color, tension: 0.4, fill: true,
+                    backgroundColor: color + '22', borderWidth: 2, pointRadius: 4
+                }]
+            },
+            options: {
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: { y: { min: 0, max: 100, ticks: { stepSize: 25 } }, x: { grid: { display: false } } }
+            }
+        });
+    }
+
+    function renderSparkline(id, history, color) {
+        const ctx = document.getElementById(id);
+        const data = history.map(h => h === 'active' ? 1 : 0);
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: data,
+                datasets: [{ data: data, borderColor: color, borderWidth: 2, tension: 0.3, pointRadius: 0, fill: false }]
+            },
+            options: {
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: { x: { display: false }, y: { display: false, min: -0.2, max: 1.2 } }
+            }
+        });
+    }
 </script>
 </body>
 </html>

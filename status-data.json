@@ -1,0 +1,10 @@
+[
+  {
+    "id": "central",
+    "status": "active"
+  },
+  {
+    "id": "sultan",
+    "status": "inactive"
+  }
+]

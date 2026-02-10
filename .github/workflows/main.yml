@@ -33,6 +33,6 @@ jobs:
           git config --global user.name "Monitor Bot"
           git config --global user.email "bot@monitor.com"
           git add status_data.json
-          # اگر تغییری نباشه خطا نمیده
+          git pull origin main --rebase
           git commit -m "Update server status" || exit 0
           git push

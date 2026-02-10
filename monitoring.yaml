@@ -1,0 +1,29 @@
+name: Monitoring & Uptime Check
+
+on:
+  schedule:
+    - cron: '*/5 * * * *'  # هر 5 دقیقه
+  workflow_dispatch:  # امکان اجرای دستی
+
+jobs:
+  check-services:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+    
+    - name: Check Services
+      run: node check-services.js
+    
+    - name: Update Dashboard
+      run: |
+        git config --global user.name 'github-actions'
+        git config --global user.email 'github-actions@github.com'
+        git add data/ README.md
+        git diff --quiet && git diff --staged --quiet || git commit -m "Update uptime data [$(date)]"
+        git push

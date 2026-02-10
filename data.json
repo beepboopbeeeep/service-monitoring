@@ -1,5 +1,5 @@
 {
-  "last_updated": "1404/11/21 - 23:25",
+  "last_updated": "2026-02-11 00:34",
   "global_history": [
     {
       "time": "23:25",
@@ -28,6 +28,29 @@
         0,
         0.0
       ]
+    }
+  ],
+  "history": [
+    {
+      "time": "2026-02-11 00:34",
+      "services": {
+        "سرویس مرکزی": 100,
+        "سرویس سلطان": 0
+      }
+    }
+  ],
+  "current": [
+    {
+      "name": "سرویس مرکزی",
+      "status": "active",
+      "expiry": "2099-12-30",
+      "is_unlimited": true
+    },
+    {
+      "name": "سرویس سلطان",
+      "status": "error",
+      "expiry": "2026-03-12",
+      "is_unlimited": false
     }
   ]
 }

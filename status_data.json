@@ -1,26 +1,26 @@
 {
-  "last_updated": "19:04 - 1404/11/21",
+  "last_updated": "19:09 - 1404/11/21",
   "servers": [
     {
       "id": 1,
       "name": "سرویس مرکزی",
       "expiry_date": "unlimited",
-      "status_code": "inactive",
-      "status_text": "خطا: کندی شبکه",
+      "status_code": "active",
+      "status_text": "فعال",
       "days_left": 9999,
       "history": [
-        "inactive"
+        "active"
       ]
     },
     {
       "id": 2,
       "name": "سرویس سلطان",
       "expiry_date": "1404/12/21",
-      "status_code": "inactive",
-      "status_text": "خطا: کندی شبکه",
+      "status_code": "active",
+      "status_text": "فعال",
       "days_left": 30,
       "history": [
-        "inactive"
+        "active"
       ]
     }
   ]

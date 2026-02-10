@@ -1,5 +1,11 @@
 {
-  "last_updated": "23:17 - 2026/02/10",
+  "last_updated": "1404/11/21 - 23:25",
+  "global_history": [
+    {
+      "time": "23:25",
+      "score": 50.0
+    }
+  ],
   "services": [
     {
       "id": 1,
@@ -8,7 +14,8 @@
       "expiry_date": "unlimited",
       "days_left": 9999,
       "history": [
-        1
+        1,
+        1.0
       ]
     },
     {
@@ -18,7 +25,8 @@
       "expiry_date": "1404/12/21",
       "days_left": 30,
       "history": [
-        0
+        0,
+        0.0
       ]
     }
   ]

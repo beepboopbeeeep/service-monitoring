@@ -1,5 +1,5 @@
 {
-  "last_updated": "19:22 - 1404/11/21",
+  "last_updated": "19:35 - 1404/11/21",
   "servers": [
     {
       "id": 1,
@@ -7,7 +7,6 @@
       "expiry_date": "unlimited",
       "status_code": "active",
       "status_text": "فعال",
-      "days_left": 9999,
       "history": [
         "active"
       ]
@@ -18,10 +17,20 @@
       "expiry_date": "1404/12/21",
       "status_code": "active",
       "status_text": "فعال",
-      "days_left": 30,
       "history": [
         "active"
       ]
     }
-  ]
+  ],
+  "global_history": {
+    "1404/11/21": 100.0
+  },
+  "server_histories": {
+    "1": [
+      "active"
+    ],
+    "2": [
+      "active"
+    ]
+  }
 }

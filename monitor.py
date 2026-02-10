@@ -49,8 +49,19 @@ def check_service(url):
 
 def load_data():
     if os.path.exists(DATA_FILE):
-        with open(DATA_FILE, 'r', encoding='utf-8') as f:
-            return json.load(f)
+        try:
+            with open(DATA_FILE, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+                # بررسی و تعمیر خودکار اگر کلیدها وجود نداشتند
+                if "history" not in data:
+                    data["history"] = []
+                if "current" not in data:
+                    data["current"] = []
+                return data
+        except (json.JSONDecodeError, ValueError):
+            # اگر فایل خراب یا خالی بود، مقدار پیش‌فرض برگردان
+            pass
+            
     return {"history": [], "current": []}
 
 def save_data(data):

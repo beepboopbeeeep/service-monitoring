@@ -18,7 +18,7 @@ SERVICES = [
     },
     {
         "name": "سرویس سلطان",
-        "url": "https://hitmeintheyes.judiopu.workers.dev/panel",
+        "url": "https://hitmeintheeyes.judiopu.workers.dev/panel",
         "expiry": "2026-03-12", # معادل 21/12/1404
         "alias": "soltan",
         "is_unlimited": False

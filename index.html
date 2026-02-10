@@ -1,445 +1,104 @@
-<!DOCTYPE html>
-<html lang="fa" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>وضعیت لحظه‌ای سرورها</title>
-    <link href="https://cdn.fontcdn.ir/Font/Persian/Vazir/Vazir.css" rel="stylesheet" type="text/css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/moment/moment.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/moment-jalaali/build/moment-jalaali.js"></script>
+import requests
+import json
+import datetime
+import os
+import pytz
 
-    <style>
-        :root {
-            --bg-color: #1E1E1E;
-            --accent-color: #C7A46C;
-            --text-color: #ffffff;
-            --card-bg: #2d2d2d;
-            --success: #00C851;
-            --warning: #ffbb33;
-            --danger: #ff4444;
-            --orange: #FF8800;
-        }
+# ==========================================
+# تنظیمات سرویس‌ها (اینجا رو ادیت کن)
+# تاریخ‌ها باید به صورت میلادی باشند: YYYY-MM-DD
+# ==========================================
+SERVICES = [
+    {
+        "name": "سرویس مرکزی",
+        "url": "https://tellmeimright.taxyvy.workers.dev/panel",
+        "expiry": "2099-12-30",  # تاریخ دور برای نامحدود
+        "alias": "central", # یک شناسه انگلیسی کوتاه
+        "is_unlimited": True # اگر نامحدود است True بزار
+    },
+    {
+        "name": "سرویس سلطان",
+        "url": "https://hitmeintheyes.judiopu.workers.dev/panel",
+        "expiry": "2026-03-12", # معادل 21/12/1404
+        "alias": "soltan",
+        "is_unlimited": False
+    }
+]
 
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            font-family: 'Vazir', sans-serif;
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
-        }
+# فایل ذخیره اطلاعات
+DATA_FILE = "data.json"
+MAX_HISTORY = 672  # نگهداری تاریخچه برای حدود 1 ماه (اگر ساعتی یکبار اجرا شود)
 
-        .container {
-            max-width: 800px;
-            width: 100%;
-        }
-
-        h1 {
-            color: var(--accent-color);
-            text-align: center;
-            margin-bottom: 10px;
-            font-weight: 900;
-            text-shadow: 0 0 10px rgba(199, 164, 108, 0.3);
-        }
-
-        /* بخش راهنما و پیام‌ها */
-        .info-box {
-            background: rgba(199, 164, 108, 0.1);
-            border: 1px solid var(--accent-color);
-            border-radius: 12px;
-            padding: 15px;
-            margin-bottom: 30px;
-            font-size: 0.9em;
-            line-height: 1.8;
-            backdrop-filter: blur(5px);
-        }
-
-        .info-box ul {
-            margin: 0;
-            padding-right: 20px;
-        }
-
-        .highlight {
-            color: var(--accent-color);
-            font-weight: bold;
-        }
-
-        /* کارت‌های سرویس */
-        .status-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 20px;
-            margin-bottom: 40px;
-        }
-
-        .service-card {
-            background-color: var(--card-bg);
-            border-radius: 15px;
-            padding: 20px;
-            position: relative;
-            overflow: hidden;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            border-right: 4px solid transparent;
-        }
-
-        .service-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
-        }
-
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-            padding-bottom: 10px;
-        }
-
-        .service-name {
-            font-size: 1.3em;
-            font-weight: bold;
-            color: var(--accent-color);
-        }
-
-        .status-badge {
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 0.85em;
-            font-weight: bold;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .status-badge.active { background: rgba(0, 200, 81, 0.2); color: var(--success); border: 1px solid var(--success); }
-        .status-badge.warning { background: rgba(255, 187, 51, 0.2); color: var(--warning); border: 1px solid var(--warning); }
-        .status-badge.inactive { background: rgba(255, 68, 68, 0.2); color: var(--danger); border: 1px solid var(--danger); }
-
-        .details-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            font-size: 0.9em;
-        }
-
-        .detail-item {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .detail-label {
-            opacity: 0.6;
-            font-size: 0.8em;
-            margin-bottom: 3px;
-        }
-
-        .detail-value {
-            font-weight: bold;
-        }
-
-        /* استایل‌های وضعیت تمدید */
-        .renewal-normal { color: var(--text-color); }
-        .renewal-near { color: var(--warning); text-shadow: 0 0 5px rgba(255, 187, 51, 0.5); }
-        .renewal-today { color: var(--orange); font-weight: 900; animation: pulse 2s infinite; }
-        .renewal-overdue { color: var(--danger); }
-
-        @keyframes pulse {
-            0% { opacity: 1; }
-            50% { opacity: 0.7; }
-            100% { opacity: 1; }
-        }
-
-        /* نمودارها */
-        .charts-container {
-            background: var(--card-bg);
-            border-radius: 15px;
-            padding: 20px;
-            margin-top: 30px;
-        }
+def check_service(url):
+    try:
+        response = requests.get(url, timeout=15)
+        text = response.text.lower()
         
-        .charts-title {
-            color: var(--accent-color);
-            margin-bottom: 15px;
-            font-size: 1.2em;
-        }
-
-        .chart-wrapper {
-            position: relative;
-            height: 300px;
-            width: 100%;
-        }
-
-        .last-update {
-            text-align: center;
-            margin-top: 30px;
-            opacity: 0.5;
-            font-size: 0.8em;
-        }
-
-        /* Loading */
-        #loading {
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: var(--bg-color);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
-        .spinner {
-            width: 50px;
-            height: 50px;
-            border: 5px solid rgba(199, 164, 108, 0.3);
-            border-top: 5px solid var(--accent-color);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
-    </style>
-</head>
-<body>
-
-    <div id="loading"><div class="spinner"></div></div>
-
-    <div class="container">
-        <h1>وضعیت لحظه‌ای سرورها</h1>
-
-        <div class="info-box">
-            <h3>📌 راهنمای کاربران:</h3>
-            <ul>
-                <li>اگر وضعیت سرویس <span style="color:var(--success)">فعال</span> است: تبریک! سرویس شما با موفقیت و پرسرعت در حال کار است.</li>
-                <li>اگر با پیام <span style="color:var(--warning)">سنگینی بار سرور</span> مواجه شدید: اصلاً نگران نباشید. فقط تا ساعت ۳:۳۰ الی ۴:۰۰ بامداد صبر کنید تا محدودیت‌ها به صورت اتوماتیک بازنشانی شود.</li>
-                <li>اگر وضعیت <span style="color:var(--danger)">غیرفعال</span> است: لطفاً به پشتیبانی پیام دهید.</li>
-                <li>⚠️ در صورت بروز هرگونه قطعی، زمان از دست رفته به اعتبار شما اضافه می‌شود. نگران ضرر مالی نباشید.</li>
-                <li>🎁 با معرفی دوستان خود، واجد شرایط <strong>تخفیف ویژه</strong> در تمدید ماهیانه شوید!</li>
-            </ul>
-        </div>
-
-        <div id="servers-container" class="status-grid">
-            </div>
-
-        <div class="charts-container">
-            <div class="charts-title">📊 نمودار پایداری سرویس‌ها (۷ روز گذشته)</div>
-            <div class="chart-wrapper">
-                <canvas id="uptimeChart"></canvas>
-            </div>
-        </div>
-
-        <div class="last-update" id="last-update-time"></div>
-    </div>
-
-    <script>
-        // تبدیل اعداد به فارسی
-        function toPersianNum(num) {
-            const farsiDigits = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
-            return num.toString().replace(/\d/g, x => farsiDigits[x]);
-        }
-
-        // محاسبات تاریخ تمدید
-        function calculateRenewal(renewalDateStr) {
-            if (renewalDateStr === 'unlimited') {
-                return { text: 'نامحدود', class: 'renewal-normal', days: null };
-            }
-
-            // تبدیل تاریخ شمسی ورودی به آبجکت moment
-            const renewalDate = moment(renewalDateStr, 'jYYYY/jMM/jDD');
-            const today = moment();
+        # لاجیک تشخیص وضعیت
+        if "panel" in text:
+            return "active", 100 # وضعیت سبز
+        elif "rate" in text or "1027" in text:
+            return "warning", 50 # وضعیت سنگینی بار
+        elif "1101" in text:
+            return "error", 0 # وضعیت غیرفعال
+        else:
+            return "error", 0 # هر چیز دیگر غیرفعال
             
-            // محاسبه اختلاف روز
-            const diffDays = renewalDate.diff(today, 'days');
+    except Exception as e:
+        return "error", 0
 
-            if (diffDays > 10) {
-                return { 
-                    text: `${toPersianNum(diffDays)} روز مانده (${toPersianNum(renewalDateStr)})`, 
-                    class: 'renewal-normal',
-                    days: diffDays
-                };
-            } else if (diffDays > 0 && diffDays <= 10) {
-                return { 
-                    text: `⚠️ تنها ${toPersianNum(diffDays)} روز باقی‌مانده!`, 
-                    class: 'renewal-near',
-                    days: diffDays
-                };
-            } else if (diffDays === 0) {
-                return { 
-                    text: '🔥 امروز روز تمدید است!', 
-                    class: 'renewal-today',
-                    days: 0
-                };
-            } else {
-                return { 
-                    text: `⛔ ${toPersianNum(Math.abs(diffDays))} روز گذشته (نیاز به تمدید فوری)`, 
-                    class: 'renewal-overdue',
-                    days: diffDays
-                };
-            }
+def load_data():
+    if os.path.exists(DATA_FILE):
+        with open(DATA_FILE, 'r', encoding='utf-8') as f:
+            return json.load(f)
+    return {"history": [], "current": []}
+
+def save_data(data):
+    with open(DATA_FILE, 'w', encoding='utf-8') as f:
+        json.dump(data, f, ensure_ascii=False, indent=2)
+
+def main():
+    # تنظیم زمان به وقت ایران
+    tehran_tz = pytz.timezone('Asia/Tehran')
+    now = datetime.datetime.now(tehran_tz)
+    timestamp_str = now.strftime("%Y-%m-%d %H:%M")
+    
+    data = load_data()
+    
+    current_status_list = []
+    history_point = {"time": timestamp_str, "services": {}}
+    
+    print(f"--- Check Started: {timestamp_str} ---")
+    
+    for service in SERVICES:
+        status, score = check_service(service["url"])
+        print(f"Checking {service['name']}... Status: {status}")
+        
+        # اطلاعات برای نمایش لحظه‌ای
+        service_info = {
+            "name": service["name"],
+            "status": status,
+            "expiry": service["expiry"],
+            "is_unlimited": service.get("is_unlimited", False)
         }
+        current_status_list.append(service_info)
+        
+        # اطلاعات برای نمودار
+        history_point["services"][service["name"]] = score
 
-        // تابع اصلی
-        async function init() {
-            try {
-                // دریافت دیتای تولید شده توسط GitHub Actions
-                const response = await fetch('data.json');
-                const data = await response.json();
-                
-                renderServers(data.servers);
-                renderChart(data.history, data.servers);
-                
-                const updateTime = new Date(data.lastUpdate);
-                document.getElementById('last-update-time').innerHTML = 
-                    `آخرین بروزرسانی: ${toPersianNum(updateTime.toLocaleTimeString('fa-IR'))}`;
+    # آپدیت هیستوری
+    data["history"].append(history_point)
+    
+    # محدود کردن حجم هیستوری (حذف قدیمی‌ها)
+    if len(data["history"]) > MAX_HISTORY:
+        data["history"] = data["history"][-MAX_HISTORY:]
+    
+    # ذخیره وضعیت فعلی
+    data["current"] = current_status_list
+    data["last_updated"] = timestamp_str
+    
+    save_data(data)
+    print("--- Check Finished & Saved ---")
 
-            } catch (error) {
-                console.error("Error loading data:", error);
-                document.getElementById('servers-container').innerHTML = '<p style="text-align:center">خطا در بارگذاری اطلاعات. لطفا صفحه را رفرش کنید.</p>';
-            } finally {
-                document.getElementById('loading').style.display = 'none';
-            }
-        }
-
-        function renderServers(servers) {
-            const container = document.getElementById('servers-container');
-            container.innerHTML = '';
-
-            servers.forEach(srv => {
-                const renewalInfo = calculateRenewal(srv.renewalDate);
-                
-                let statusClass = '';
-                let statusIcon = '';
-                
-                if (srv.currentStatus === 'active') {
-                    statusClass = 'active';
-                    statusIcon = '✅';
-                } else if (srv.currentStatus === 'warning') {
-                    statusClass = 'warning';
-                    statusIcon = '⚠️';
-                } else {
-                    statusClass = 'inactive';
-                    statusIcon = '⛔';
-                }
-
-                // تعیین رنگ حاشیه راست بر اساس وضعیت
-                let borderColor = statusClass === 'active' ? 'var(--success)' : (statusClass === 'warning' ? 'var(--warning)' : 'var(--danger)');
-
-                const html = `
-                    <div class="service-card" style="border-right-color: ${borderColor}">
-                        <div class="card-header">
-                            <span class="service-name">${srv.name}</span>
-                            <span class="status-badge ${statusClass}">
-                                ${statusIcon} ${srv.currentMsg}
-                            </span>
-                        </div>
-                        <div class="details-grid">
-                            <div class="detail-item">
-                                <span class="detail-label">وضعیت تمدید:</span>
-                                <span class="detail-value ${renewalInfo.class}">${renewalInfo.text}</span>
-                            </div>
-                            <div class="detail-item">
-                                <span class="detail-label">کد معرف (تخفیف):</span>
-                                <span class="detail-value" style="color:var(--accent-color)">${srv.referralCode || '-'}</span>
-                            </div>
-                        </div>
-                    </div>
-                `;
-                container.innerHTML += html;
-            });
-        }
-
-        function renderChart(history, servers) {
-            const ctx = document.getElementById('uptimeChart').getContext('2d');
-            
-            // آماده‌سازی دیتاست‌ها
-            const datasets = servers.map(srv => {
-                // رنگ اختصاصی برای هر یوزر (هش کردن نام برای ثبات رنگ یا استفاده از رنگ‌های پیش‌فرض)
-                const srvHistory = history[srv.id] || [];
-                
-                // تبدیل وضعیت‌ها به عدد برای نمودار (1: فعال، 0.5: وارنینگ، 0: قطع)
-                const dataPoints = srvHistory.map(h => {
-                    if (h.s === 'active') return 1;
-                    if (h.s === 'warning') return 0.5;
-                    return 0;
-                });
-
-                // لیبل‌های زمان (فقط برای محور X یکی کافیست اما اینجا مپ میکنیم)
-                // ما فقط دیتا پوینت برمیگردانیم، لیبل‌ها را جدا میسازیم
-                
-                let color = srv.id === 'server1' ? '#00C851' : '#33b5e5'; // رنگ‌های تلگرامی
-                if (servers.indexOf(srv) > 1) color = '#ffbb33'; 
-
-                return {
-                    label: srv.name,
-                    data: dataPoints,
-                    borderColor: color,
-                    backgroundColor: color + '20', // شفاف
-                    borderWidth: 2,
-                    tension: 0.4, // نرم کردن خطوط مثل تلگرام
-                    fill: true,
-                    pointRadius: 0
-                };
-            });
-
-            // ساخت لیبل‌های محور X (زمان)
-            // فرض میکنیم همه سرورها در یک زمان آپدیت شدند، از هیستوری اولی استفاده میکنیم
-            const firstSrvId = servers[0].id;
-            const labels = (history[firstSrvId] || []).map(h => {
-                const date = new Date(h.t);
-                return toPersianNum(date.toLocaleDateString('fa-IR', {day: 'numeric', month: 'short'}));
-            });
-
-            new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: datasets
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    interaction: {
-                        mode: 'index',
-                        intersect: false,
-                    },
-                    plugins: {
-                        legend: {
-                            labels: {
-                                color: '#fff',
-                                font: { family: 'Vazir' }
-                            }
-                        },
-                        tooltip: {
-                            titleFont: { family: 'Vazir' },
-                            bodyFont: { family: 'Vazir' },
-                            rtl: true
-                        }
-                    },
-                    scales: {
-                        y: {
-                            display: false, // پنهان کردن اعداد محور عمودی برای زیبایی
-                            min: -0.1,
-                            max: 1.2
-                        },
-                        x: {
-                            ticks: {
-                                color: 'rgba(255,255,255,0.5)',
-                                font: { family: 'Vazir', size: 10 },
-                                maxTicksLimit: 7 // شلوغ نشدن محور
-                            },
-                            grid: {
-                                color: 'rgba(255,255,255,0.05)'
-                            }
-                        }
-                    }
-                }
-            });
-        }
-
-        init();
-    </script>
-</body>
-</html>
+if __name__ == "__main__":
+    main()

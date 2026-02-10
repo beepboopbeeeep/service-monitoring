@@ -1,4 +1,4 @@
-name: Monitor Services
+name: Update Status
 
 on:
   schedule:
@@ -10,24 +10,23 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
-
-    - name: Set up Python
-      uses: actions/setup-python@v4
+    - uses: actions/checkout@v3
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
       with:
-        python-version: '3.9'
-
-    - name: Install dependencies
-      run: |
-        pip install requests jdatetime pytz
-
-    - name: Run monitor script
-      run: python monitor.py
-
-    - name: Commit and push changes
+        node-version: '18'
+        
+    - name: Install Dependencies
+      run: npm install
+      
+    - name: Run Monitor Script
+      run: node monitor.js
+      
+    - name: Commit and Push changes
       run: |
         git config --global user.name 'Monitor Bot'
         git config --global user.email 'bot@noreply.github.com'
         git add data.json
-        git diff --quiet && git diff --staged --quiet || (git commit -m "Update status" && git push)
+        git commit -m "Update server status" || exit 0
+        git push

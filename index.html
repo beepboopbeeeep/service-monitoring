@@ -11,6 +11,7 @@
     <!-- کتابخانه‌های مورد نیاز -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jalaali-js/dist/jalaali.js"></script>
+    <!-- مومنت جاوااسکریپت برای سایر بخش‌ها باقی می‌ماند، ولی تاریخ آپدیت باIntl هندل می‌شود -->
     <script src="https://cdn.jsdelivr.net/npm/moment/moment.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/moment-jalaali/build/moment-jalaali.js"></script>
 
@@ -493,7 +494,7 @@
     </div>
 
     <script>
-        // --- توابع کمکی (بدون تغییر منطق) ---
+        // --- توابع کمکی ---
         function toPersianNum(n) {
             const farsiDigits = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
             return n.toString().replace(/\d/g, x => farsiDigits[x]);
@@ -505,14 +506,15 @@
             const diffTime = expiry - now;
             const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
             
+            // توجه: اینجا هنوز از moment استفاده می‌کنیم برای تاریخ داخل کارت‌ها چون نیاز به فرمت‌دهی خاص داریم
+            // اما در بخش fetchData طبق درخواست شما از Intl استفاده شده است.
             moment.loadPersian({usePersianDigits: true});
             const shamsiDate = moment(expiryDateStr, 'YYYY-MM-DD').format('jYYYY/jMM/jDD');
 
             let statusClass = "exp-normal";
-            let colorCode = "#C7A46C"; // رنگ پیش‌فرض طلایی
+            let colorCode = "#C7A46C"; 
             let text = `${toPersianNum(diffDays)} روز مانده`;
             
-            // فرض می‌کنیم ۳۰ روز یک سرویس کامل است برای محاسبه درصد نوار پیشرفت
             let maxDays = 30; 
             let progressPercent = Math.max(0, Math.min(100, (diffDays / maxDays) * 100));
 
@@ -536,25 +538,39 @@
             return { shamsiDate, diffDays, text, statusClass, colorCode, progressPercent };
         }
 
+        // --- تابع اصلی دریافت اطلاعات (بازطراحی شده طبق درخواست شما) ---
         async function fetchData() {
             try {
-                // تلاش برای دریافت دیتا
+                // اضافه کردن timestamp برای جلوگیری از کش شدن فایل جیسون
                 const response = await fetch('data.json?t=' + new Date().getTime());
                 const data = await response.json();
                 
-                // مخفی کردن لودینگ
                 document.getElementById('loading').style.display = 'none';
-                document.getElementById('lastUpdate').innerText = `آخرین بروزرسانی: ${toPersianNum(moment(data.last_updated).format('jYYYY/jMM/jDD HH:mm'))}`;
+                
+                // --- بخش اصلاح شده برای تاریخ شمسی تمیز (طبق کد شما) ---
+                const lastUpdateDate = new Date(data.last_updated);
+                const shamsiString = new Intl.DateTimeFormat('fa-IR', {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: false // فرمت 24 ساعته
+                }).format(lastUpdateDate);
+                
+                document.getElementById('lastUpdate').innerText = `آخرین بروزرسانی: ${shamsiString}`;
+                // -------------------------------------------
 
                 renderCards(data.current);
                 renderCharts(data.history);
 
             } catch (error) {
                 console.error('Error:', error);
+                // حفظ طراحی گرافیکی قبلی برای نمایش خطا
                 document.getElementById('loading').innerHTML = `
                     <div style="color:var(--red); margin-top:20px;">
                         <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
-                        <p>خطا در اتصال به سرور. لطفا اتصال اینترنت را بررسی کنید.</p>
+                        <p>خطا در دریافت اطلاعات.</p>
                     </div>
                 `;
             }
@@ -567,7 +583,6 @@
             services.forEach((service, index) => {
                 let statusText, statusClass, message, msgClass, iconSvg;
                 
-                // انتخاب آیکون و رنگ بر اساس وضعیت
                 if (service.status === 'active') {
                     statusText = 'فعال و پایدار';
                     statusClass = 'status-active';
@@ -588,7 +603,6 @@
                     iconSvg = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>';
                 }
 
-                // منطق تاریخ و نوار پیشرفت
                 let expiryHtml = '';
                 let progressHtml = '';
                 
@@ -610,10 +624,8 @@
                     `;
                 }
 
-                // ساخت HTML کارت با طراحی جدید
                 const card = document.createElement('div');
                 card.className = 'card';
-                // تاخیر در انیمیشن برای افکت آبشاری
                 card.style.animationDelay = `${index * 0.1}s`;
 
                 card.innerHTML = `
@@ -646,11 +658,10 @@
         }
 
         function renderCharts(history) {
-            // تنظیمات مشترک برای گرادینت نمودار
             function createGradient(ctx, color) {
                 const gradient = ctx.createLinearGradient(0, 0, 0, 300);
-                gradient.addColorStop(0, color.replace('1)', '0.5)')); // شروع رنگ کدر
-                gradient.addColorStop(1, color.replace('1)', '0.0)')); // پایان رنگ شفاف
+                gradient.addColorStop(0, color.replace('1)', '0.5)')); 
+                gradient.addColorStop(1, color.replace('1)', '0.0)')); 
                 return gradient;
             }
 
@@ -660,11 +671,10 @@
             if(history.length > 0) {
                 const serviceNames = Object.keys(history[0].services);
                 
-                // پالت رنگی برای نمودارها (هماهنگ با تم)
                 const colors = [
-                    'rgba(74, 222, 128, 1)',   // سبز
-                    'rgba(250, 204, 21, 1)',   // زرد
-                    'rgba(56, 189, 248, 1)'    // آبی
+                    'rgba(74, 222, 128, 1)',   
+                    'rgba(250, 204, 21, 1)',   
+                    'rgba(56, 189, 248, 1)'    
                 ];
 
                 serviceNames.forEach((name, index) => {
@@ -751,7 +761,6 @@
                 }
             };
 
-            // رسم نمودار هفتگی
             const ctxWeekly = document.getElementById('weeklyChart').getContext('2d');
             new Chart(ctxWeekly, {
                 type: 'line',
@@ -759,7 +768,6 @@
                 options: options
             });
 
-            // رسم نمودار ماهانه
             const ctxMonthly = document.getElementById('monthlyChart').getContext('2d');
             new Chart(ctxMonthly, {
                 type: 'line',

@@ -1,5 +1,5 @@
 {
-  "last_update": "1404/11/22 11:31",
+  "last_update": "1404/11/22 11:38",
   "services": [
     {
       "name": "سرویس مرکزی",
@@ -28,6 +28,18 @@
     {
       "timestamp": "2026-02-11T11:31:05.855536+03:30",
       "time_label": "11:31",
+      "service_name": "سرویس سلطان",
+      "status": "active"
+    },
+    {
+      "timestamp": "2026-02-11T11:38:33.517051+03:30",
+      "time_label": "11:38",
+      "service_name": "سرویس مرکزی",
+      "status": "active"
+    },
+    {
+      "timestamp": "2026-02-11T11:38:33.517051+03:30",
+      "time_label": "11:38",
       "service_name": "سرویس سلطان",
       "status": "active"
     }

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>پنل مانیتورینگ وضعیت سرورها | حرفه‌ای</title>
+    <title>پنل مانیتورینگ وضعیت سرورها</title>
     
     <!-- Fonts -->
     <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
@@ -681,10 +681,11 @@
 
             // پردازش داده‌ها
             const datasets = serviceNames.map((name, index) => {
+                const serviceHistory = history.filter(h => h.service_name === name);
                 return {
                     label: name,
-                    data: history.filter(h => h.service_name === name).map(h => ({
-                        x: h.timestamp,
+                    data: serviceHistory.map(h => ({
+                        x: h.time_label, // استفاده از time_label به جای timestamp
                         y: statusMap[h.status] || 0
                     })),
                     borderColor: borderColors[index % borderColors.length],
@@ -742,7 +743,7 @@
                 scales: {
                     x: {
                         type: 'category',
-                        labels: [...new Set(history.map(h => h.time_label))].reverse(),
+                        labels: [...new Set(history.map(h => h.time_label))].reverse(), // این قسمت دیگر لازم نیست چون دیتا در x قرار می‌گیرد
                         ticks: { color: '#888', font: { family: 'Vazirmatn' } },
                         grid: { color: 'rgba(255,255,255,0.05)', drawBorder: false }
                     },

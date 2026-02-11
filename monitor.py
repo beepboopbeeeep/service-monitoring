@@ -20,14 +20,14 @@ SERVICES = [
     {
         "id": "central",
         "name": "سرویس مرکزی",
-        "url": "https://tellmeimright.taxyvy.workers.dev/panel",
+        "url": "https://tellmeimright.taxyvy.workers.dev/login",
         "renewal_date": "نامحدود",
         "color": "#C7A46C"
     },
     {
         "id": "sultan",
         "name": "سرویس سلطان", 
-        "url": "https://hitmeintheyes.judiopu.workers.dev/panel",
+        "url": "https://hitmeintheyes.judiopu.workers.dev/login",
         "renewal_date": "1404/12/21",
         "color": "#4CAF50"
     }

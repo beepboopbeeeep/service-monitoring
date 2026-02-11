@@ -26,6 +26,12 @@ services_config = [
         "url": "https://sinafam.halimash.workers.dev/panel",
         "renewal_date": "1404/12/22",
         "color": "#00ffaa"
+    },
+    {
+        "name": "سرویس امید",
+        "url": "https://omid.mastmusir.workers.dev/panel",
+        "renewal_date": "1404/12/22",
+        "color": "#0084ff"
     }
     # برای اضافه کردن سرویس جدید، یک دیکشنری مشابه بالا اضافه کنید
 ]

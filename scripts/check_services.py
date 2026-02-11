@@ -11,25 +11,25 @@ import jdatetime
 services_config = [
     {
         "name": "سرویس مرکزی",
-        "url": "https://tellmeimright.taxyvy.workers.dev/panel",
+        "url": "https://tellmeimright.taxyvy.workers.dev/login",
         "renewal_date": "نامحدود", # فرمت: "YYYY/MM/DD" یا "نامحدود"
         "color": "#C7A46C"
     },
     {
         "name": "سرویس سلطان",
-        "url": "https://hitmeintheeyes.judiopu.workers.dev/panel",
+        "url": "https://hitmeintheeyes.judiopu.workers.dev/login",
         "renewal_date": "1404/12/21",
         "color": "#FF5722"
     },
     {
         "name": "سرویس سینا",
-        "url": "https://sinafam.halimash.workers.dev/panel",
+        "url": "https://sinafam.halimash.workers.dev/login",
         "renewal_date": "1404/12/22",
         "color": "#00ffaa"
     },
     {
         "name": "سرویس امید",
-        "url": "https://omid.mastmusir.workers.dev/panel",
+        "url": "https://omid.mastmusir.workers.dev/login",
         "renewal_date": "1404/12/22",
         "color": "#0084ff"
     }

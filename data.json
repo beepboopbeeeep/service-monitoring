@@ -1,0 +1,35 @@
+{
+  "last_update": "1404/11/22 07:56",
+  "services": [
+    {
+      "name": "سرویس مرکزی",
+      "status": "active",
+      "renewal_date": "نامحدود",
+      "days_remaining": null,
+      "message": "تبریک! سرویس شما با موفقیت در حال فعالیت است.",
+      "url": "https://tellmeimright.taxyvy.workers.dev/panel"
+    },
+    {
+      "name": "سرویس سلطان",
+      "status": "inactive",
+      "renewal_date": "1404/12/21",
+      "days_remaining": 29,
+      "message": "سرویس غیرفعال است. لطفاً به پشتیبانی مراجعه کنید.",
+      "url": "https://hitmeintheyes.judiopu.workers.dev/panel"
+    }
+  ],
+  "history": [
+    {
+      "timestamp": "2026-02-11T07:56:35.863068",
+      "time_label": "07:56",
+      "service_name": "سرویس مرکزی",
+      "status": "active"
+    },
+    {
+      "timestamp": "2026-02-11T07:56:35.863068",
+      "time_label": "07:56",
+      "service_name": "سرویس سلطان",
+      "status": "inactive"
+    }
+  ]
+}

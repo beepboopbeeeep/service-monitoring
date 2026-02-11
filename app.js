@@ -25,8 +25,8 @@ const CONFIG = {
         //     color: '#2196F3'
         // }
     ],
-    statusUrl: 'https://raw.githubusercontent.com/YOUR_USERNAME/YOUR_REPO/main/status.json',
-    historyUrl: 'https://raw.githubusercontent.com/YOUR_USERNAME/YOUR_REPO/main/history.json',
+    statusUrl: 'https://raw.githubusercontent.com/beepboopbeeeep/service-monitoring/main/status.json',
+    historyUrl: 'https://raw.githubusercontent.com/beepboopbeeeep/service-monitoring/main/history.json',
     updateInterval: 600000 // 10 دقیقه
 };
 

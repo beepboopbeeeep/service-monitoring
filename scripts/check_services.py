@@ -20,6 +20,12 @@ services_config = [
         "url": "https://hitmeintheeyes.judiopu.workers.dev/panel",
         "renewal_date": "1404/12/21",
         "color": "#FF5722"
+    },
+    {
+        "name": "سرویس سینا",
+        "url": "https://sinafam.halimash.workers.dev/panel",
+        "renewal_date": "1404/12/22",
+        "color": "#00ffaa"
     }
     # برای اضافه کردن سرویس جدید، یک دیکشنری مشابه بالا اضافه کنید
 ]

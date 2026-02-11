@@ -26,7 +26,7 @@ services_config = [
 
 # فایل ذخیره داده‌ها
 DATA_FILE = "data.json"
-HISTORY_LENGTH = 1000 # تعداد رکوردهای تاریخچه نگهداری شده
+HISTORY_LENGTH = 4500 # تعداد رکوردهای تاریخچه نگهداری شده
 
 def get_status(content):
     """بررسی وضعیت سرویس بر اساس محتوای صفحه"""

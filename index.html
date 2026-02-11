@@ -425,6 +425,21 @@
             padding: 25px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.2);
             position: relative;
+            height: 350px; /* افزودن ارتفاع ثابت */
+        }
+
+        .chart-card h3 {
+            color: var(--text-color);
+            margin-bottom: 25px;
+            text-align: center;
+            font-weight: 600;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            padding-bottom: 15px;
+        }
+
+        /* افزودن ارتفاع مشخص برای canvas نمودارها */
+        .chart-card canvas {
+            height: 250px !important;
         }
         
         /* گوشه‌های تکنیکال برای کارت نمودار */
@@ -445,15 +460,6 @@
             width: 100%;
             height: 100%;
             opacity: 0.1;
-        }
-
-        .chart-card h3 {
-            color: var(--text-color);
-            margin-bottom: 25px;
-            text-align: center;
-            font-weight: 600;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-            padding-bottom: 15px;
         }
 
         /* لودینگ */

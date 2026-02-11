@@ -1,7 +1,8 @@
 import requests
 import json
 import os
-from datetime import datetime
+from datetime import datetime, timezone
+from zoneinfo import ZoneInfo # برای تنظیم منطقه زمانی (از پایتون 3.9 به بالا موجود است)
 import jdatetime
 
 # ==========================================
@@ -16,7 +17,7 @@ services_config = [
     },
     {
         "name": "سرویس سلطان",
-        "url": "https://hitmeintheyes.judiopu.workers.dev/panel",
+        "url": "https://hitmeintheeyes.judiopu.workers.dev/panel",
         "renewal_date": "1404/12/21",
         "color": "#FF5722"
     }
@@ -66,9 +67,13 @@ def main():
     services_data = []
     history_entry = []
     
-    now = datetime.now()
-    # زمان شمسی برای نمایش
-    jalali_now = jdatetime.datetime.fromgregorian(datetime=now)
+    # دریافت زمان فعلی به صورت UTC
+    utc_now = datetime.now(timezone.utc)
+    # تبدیل زمان به منطقه زمانی تهران
+    tehran_now = utc_now.astimezone(ZoneInfo("Asia/Tehran"))
+    
+    # تبدیل به تاریخ شمسی برای نمایش
+    jalali_now = jdatetime.datetime.fromgregorian(datetime=tehran_now)
     last_update_str = jalali_now.strftime("%Y/%m/%d %H:%M")
 
     for config in services_config:
@@ -97,7 +102,7 @@ def main():
         # فرمت time_label برای نمایش در محور X نمودار
         time_label = jalali_now.strftime("%H:%M")
         history_entry.append({
-            "timestamp": now.isoformat(),
+            "timestamp": tehran_now.isoformat(),
             "time_label": time_label,
             "service_name": config["name"],
             "status": status

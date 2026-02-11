@@ -1,5 +1,5 @@
 {
-  "lastUpdate": "2026-02-11T07:40:15.266563",
+  "lastUpdate": "2026-02-11T07:41:49.971361",
   "totalServices": 2,
   "services": {
     "central": {
@@ -9,16 +9,16 @@
       "uptime": 100.0,
       "renewal_date": "نامحدود",
       "color": "#C7A46C",
-      "last_checked": "2026-02-11T07:40:15.160946"
+      "last_checked": "2026-02-11T07:41:49.918365"
     },
     "sultan": {
       "name": "سرویس سلطان",
       "url": "https://hitmeintheyes.judiopu.workers.dev/login",
       "status": "inactive",
-      "uptime": 86.67,
+      "uptime": 83.33,
       "renewal_date": "1404/12/21",
       "color": "#4CAF50",
-      "last_checked": "2026-02-11T07:40:15.266529"
+      "last_checked": "2026-02-11T07:41:49.971326"
     }
   }
 }

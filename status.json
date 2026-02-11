@@ -1,24 +1,24 @@
 {
-  "lastUpdate": "2026-02-11T07:36:24.636816",
+  "lastUpdate": "2026-02-11T07:39:19.128095",
   "totalServices": 2,
   "services": {
     "central": {
       "name": "سرویس مرکزی",
-      "url": "https://tellmeimright.taxyvy.workers.dev/panel",
+      "url": "https://tellmeimright.taxyvy.workers.dev/login",
       "status": "active",
       "uptime": 100.0,
       "renewal_date": "نامحدود",
       "color": "#C7A46C",
-      "last_checked": "2026-02-11T07:36:24.566024"
+      "last_checked": "2026-02-11T07:39:19.069084"
     },
     "sultan": {
       "name": "سرویس سلطان",
-      "url": "https://hitmeintheyes.judiopu.workers.dev/panel",
+      "url": "https://hitmeintheyes.judiopu.workers.dev/login",
       "status": "inactive",
-      "uptime": 93.17,
+      "uptime": 90.0,
       "renewal_date": "1404/12/21",
       "color": "#4CAF50",
-      "last_checked": "2026-02-11T07:36:24.636777"
+      "last_checked": "2026-02-11T07:39:19.128059"
     }
   }
 }

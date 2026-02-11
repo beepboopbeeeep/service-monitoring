@@ -1,5 +1,5 @@
 {
-  "last_update": "1404/11/22 23:35",
+  "last_update": "1404/11/23 00:19",
   "services": [
     {
       "name": "سرویس مرکزی",
@@ -7,7 +7,7 @@
       "renewal_date": "نامحدود",
       "days_remaining": null,
       "message": "تبریک! سرویس شما با موفقیت در حال فعالیت است.",
-      "url": "https://tellmeimright.taxyvy.workers.dev/panel"
+      "url": "https://tellmeimright.taxyvy.workers.dev/login"
     },
     {
       "name": "سرویس سلطان",
@@ -15,7 +15,7 @@
       "renewal_date": "1404/12/21",
       "days_remaining": 29,
       "message": "تبریک! سرویس شما با موفقیت در حال فعالیت است.",
-      "url": "https://hitmeintheeyes.judiopu.workers.dev/panel"
+      "url": "https://hitmeintheeyes.judiopu.workers.dev/login"
     },
     {
       "name": "سرویس سینا",
@@ -23,15 +23,15 @@
       "renewal_date": "1404/12/22",
       "days_remaining": 30,
       "message": "تبریک! سرویس شما با موفقیت در حال فعالیت است.",
-      "url": "https://sinafam.halimash.workers.dev/panel"
+      "url": "https://sinafam.halimash.workers.dev/login"
     },
     {
       "name": "سرویس امید",
-      "status": "inactive",
+      "status": "active",
       "renewal_date": "1404/12/22",
       "days_remaining": 30,
-      "message": "سرویس غیرفعال است. لطفاً به پشتیبانی مراجعه کنید.",
-      "url": "https://omid.mastmusir.workers.dev/panel"
+      "message": "تبریک! سرویس شما با موفقیت در حال فعالیت است.",
+      "url": "https://omid.mastmusir.workers.dev/login"
     }
   ],
   "history": [
@@ -310,6 +310,30 @@
       "time_label": "23:35",
       "service_name": "سرویس امید",
       "status": "inactive"
+    },
+    {
+      "timestamp": "2026-02-12T00:19:19.658387+03:30",
+      "time_label": "00:19",
+      "service_name": "سرویس مرکزی",
+      "status": "active"
+    },
+    {
+      "timestamp": "2026-02-12T00:19:19.658387+03:30",
+      "time_label": "00:19",
+      "service_name": "سرویس سلطان",
+      "status": "active"
+    },
+    {
+      "timestamp": "2026-02-12T00:19:19.658387+03:30",
+      "time_label": "00:19",
+      "service_name": "سرویس سینا",
+      "status": "active"
+    },
+    {
+      "timestamp": "2026-02-12T00:19:19.658387+03:30",
+      "time_label": "00:19",
+      "service_name": "سرویس امید",
+      "status": "active"
     }
   ]
 }

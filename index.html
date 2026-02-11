@@ -13,7 +13,6 @@
 
     <style>
         :root {
-            /* حفظ رنگ‌های اصلی */
             --bg-color: #1E1E1E;
             --primary-color: #C7A46C;
             --text-color: #E0E0E0;
@@ -22,8 +21,6 @@
             --warning-color: #FFC107;
             --danger-color: #F44336;
             --info-color: #2196F3;
-
-            /* متغیرهای جدید برای طراحی خلاقانه */
             --glass-bg: rgba(45, 45, 45, 0.6);
             --glass-border: rgba(199, 164, 108, 0.15);
             --glass-blur: 12px;
@@ -49,7 +46,6 @@
             line-height: 1.6;
         }
 
-        /* پس‌زمینه شبکه ای متحرک */
         body::before {
             content: '';
             position: fixed;
@@ -65,7 +61,6 @@
             pointer-events: none;
         }
         
-        /* گرادینت محو برای عمق */
         body::after {
             content: '';
             position: fixed;
@@ -84,7 +79,6 @@
             padding: 20px;
         }
 
-        /* هدر */
         header {
             text-align: center;
             padding: 40px 0 20px;
@@ -140,7 +134,6 @@
             animation: shimmer 3s infinite;
         }
 
-        /* باکس راهنما (استایل مدرن) */
         .info-box {
             background: rgba(30, 30, 30, 0.8);
             border-right: 4px solid var(--primary-color);
@@ -197,7 +190,6 @@
             min-width: 250px;
         }
 
-        /* گرید سرویس‌ها */
         .services-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
@@ -205,7 +197,6 @@
             margin-bottom: 60px;
         }
 
-        /* کارت سرویس (طراحی شیشه‌ای و تکنیکال) */
         .service-card {
             background: var(--glass-bg);
             backdrop-filter: blur(var(--glass-blur));
@@ -252,7 +243,6 @@
             z-index: 1;
         }
 
-        /* نشانگر وضعیت حبابی */
         .status-badge {
             display: flex;
             align-items: center;
@@ -274,7 +264,6 @@
             box-shadow: 0 0 8px currentColor;
         }
         
-        /* انیمیشن پالس برای وضعیت‌ها */
         .pulse { animation: pulse-anim 2s infinite; }
 
         @keyframes pulse-anim {
@@ -296,7 +285,6 @@
             padding-right: 10px;
         }
 
-        /* بخش اطلاعات تمدید و نوار پیشرفت */
         .renewal-info {
             background: rgba(0,0,0,0.3);
             padding: 15px;
@@ -328,7 +316,6 @@
             position: relative;
         }
         
-        /* افکت درخشش روی نوار پیشرفت */
         .progress-bar::after {
             content: '';
             position: absolute;
@@ -348,7 +335,6 @@
             font-weight: bold;
         }
 
-        /* بنر معرفی */
         .referral-banner {
             margin-top: 60px;
             text-align: center;
@@ -379,20 +365,18 @@
             z-index: 2;
         }
 
-        /* بخش نمودارها */
         .charts-section {
             margin-top: 80px;
         }
 
+        /* ===== رفع مشکل عنوان: کاملاً ریسپانسیو و همیشه در مرکز ===== */
         .section-title {
-            text-align: center;
             color: var(--primary-color);
             margin-bottom: 40px;
             font-size: 1.8rem;
             position: relative;
-            display: inline-block;
-            left: 50%;
-            transform: translateX(-50%);
+            text-align: center;
+            width: 100%;
         }
         
         .section-title::after {
@@ -403,6 +387,16 @@
             background: var(--text-color);
             margin: 10px auto 0;
             opacity: 0.3;
+        }
+
+        /* تنظیم فونت برای نمایشگرهای کوچک */
+        @media (max-width: 576px) {
+            .section-title {
+                font-size: 1.4rem;
+            }
+            h1 {
+                font-size: 1.8rem;
+            }
         }
 
         .charts-container {
@@ -425,7 +419,7 @@
             padding: 25px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.2);
             position: relative;
-            height: 350px; /* افزودن ارتفاع ثابت */
+            height: 350px;
         }
 
         .chart-card h3 {
@@ -435,15 +429,14 @@
             font-weight: 600;
             border-bottom: 1px solid rgba(255,255,255,0.05);
             padding-bottom: 15px;
+            font-size: 1.1rem;
         }
 
-        /* افزودن ارتفاع مشخص برای canvas نمودارها */
         .chart-card canvas {
             height: 250px !important;
             width: 100% !important;
         }
         
-        /* گوشه‌های تکنیکال برای کارت نمودار */
         .chart-card::before, .chart-card::after {
             content: '';
             position: absolute;
@@ -463,7 +456,6 @@
             opacity: 0.1;
         }
 
-        /* لودینگ */
         #loading {
             grid-column: 1 / -1;
             text-align: center;
@@ -482,13 +474,11 @@
             animation: spin 1s linear infinite;
         }
 
-        /* انیمیشن‌ها */
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         @keyframes shimmer { 100% { transform: translateX(-100%); } }
         @keyframes rotateBg { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         
-        /* کلاس‌های کمکی رنگ متن */
         .text-yellow { color: var(--warning-color); }
         .text-orange { color: #FF9800; }
         .text-red { color: var(--danger-color); }
@@ -548,16 +538,35 @@
     </div>
 
     <script>
-        // --- منطق اصلی (بهبودیافته برای نمایش نمودارهای واقعی) ---
-        // بدون هیچ داده‌ی جعلی یا شبیه‌سازی – همه‌چیز از data.json واقعی گرفته می‌شود
+        // --- توابع کمکی ---
 
-        // تابع تبدیل اعداد انگلیسی به فارسی
+        // تبدیل اعداد انگلیسی به فارسی
         function toPersianDigits(str) {
             if (!str && str !== 0) return '';
             return str.toString().replace(/\d/g, d => '۰۱۲۳۴۵۶۷۸۹'[d]);
         }
 
-        // تابع تبدیل وضعیت کد به متن و کلاس CSS
+        // تبدیل تاریخ میلادی به شمسی (با format: MM/DD یا روز/ماه به فارسی)
+        function gregorianToPersianDate(gregorianDateStr) {
+            try {
+                const date = new Date(gregorianDateStr + 'T12:00:00'); // جلوگیری از اختلاف منطقه
+                // استفاده از Persian Calendar در مرورگرهای مدرن
+                const formatter = new Intl.DateTimeFormat('fa-IR', {
+                    calendar: 'persian',
+                    month: 'numeric',
+                    day: 'numeric'
+                });
+                return formatter.format(date); // خروجی: "۱۱/۲۲" (ماه/روز شمسی با ارقام فارسی)
+            } catch (e) {
+                // Fallback دستی ساده (در صورت عدم پشتیبانی)
+                console.warn('Persian calendar not supported, using fallback.');
+                // فقط ارقام را فارسی می‌کند و همان میلادی را برمی‌گرداند
+                const [year, month, day] = gregorianDateStr.split('-');
+                return toPersianDigits(`${month}/${day}`);
+            }
+        }
+
+        // تابع وضعیت badge
         function getStatusDetails(statusCode) {
             switch (statusCode) {
                 case 'active': return { text: 'فعال', class: 'status-active', color: '#4CAF50', dotPulse: true };
@@ -567,7 +576,7 @@
             }
         }
 
-        // دریافت داده‌ها
+        // --- دریافت داده از data.json ---
         async function fetchData() {
             try {
                 const response = await fetch('data.json');
@@ -586,24 +595,21 @@
         }
 
         function renderPage(data) {
-            // نمایش آخرین بروزرسانی
-            const updateDiv = document.getElementById('lastUpdate');
-            updateDiv.textContent = `آخرین بروزرسانی: ${toPersianDigits(data.last_update)}`;
+            // آخرین بروزرسانی
+            document.getElementById('lastUpdate').textContent = `آخرین بروزرسانی: ${toPersianDigits(data.last_update)}`;
 
             const container = document.getElementById('servicesContainer');
             container.innerHTML = '';
 
             data.services.forEach((service, index) => {
                 const statusDetails = getStatusDetails(service.status);
-                
                 const delay = index * 100;
-                
+
                 let progressColor = '#4CAF50';
                 let progressWidth = '0%';
-                
                 let daysClass = '';
                 let daysText = toPersianDigits(service.days_remaining);
-                
+
                 if (service.days_remaining !== null) {
                     if (service.days_remaining < 0) {
                         daysClass = 'text-red';
@@ -655,30 +661,25 @@
                 container.appendChild(card);
             });
 
-            // --- رندر نمودارهای واقعی (بدون شبیه‌سازی) ---
+            // رندر نمودارهای واقعی
             renderRealCharts(data.history);
         }
 
-        // ----------------------------------------------
-        // توابع پردازش داده‌های واقعی برای نمودارها
-        // ----------------------------------------------
+        // -----------------------------------------
+        // پردازش داده‌های واقعی برای نمودارها
+        // -----------------------------------------
 
-        // ۱. داده‌های نمودار ساعتی (آخرین روز موجود در تاریخچه)
+        // ۱. نمودار ساعتی (آخرین روز موجود)
         function getHourlyChartData(history) {
             if (!history || history.length === 0) return { labels: [], datasets: [] };
 
-            // پیدا کردن آخرین تاریخ (بر اساس timestamp)
             const dates = history.map(h => h.timestamp.split('T')[0]);
-            const latestDate = dates.sort().reverse()[0]; // بزرگترین تاریخ
+            const latestDate = dates.sort().reverse()[0];
             const dayData = history.filter(h => h.timestamp.startsWith(latestDate));
 
-            // استخراج همه‌ی ساعت‌های مرتب‌شده
             const hours = [...new Set(dayData.map(h => h.time_label))].sort((a, b) => a.localeCompare(b, 'fa', { numeric: true }));
-            
-            // نگاشت وضعیت به عدد
             const statusMap = { 'inactive': 0, 'high_load': 1, 'active': 2 };
-            
-            // گروه‌بندی بر اساس نام سرویس
+
             const serviceStatusMap = {};
             dayData.forEach(entry => {
                 if (!serviceStatusMap[entry.service_name]) serviceStatusMap[entry.service_name] = {};
@@ -686,14 +687,9 @@
             });
 
             const serviceNames = Object.keys(serviceStatusMap).sort();
-            
-            // ساخت دیتاست برای هر سرویس
-            const datasets = serviceNames.map((serviceName, idx) => {
-                // داده برای هر ساعت (به ترتیب hours)
-                const data = hours.map(hour => {
-                    return serviceStatusMap[serviceName][hour] !== undefined ? serviceStatusMap[serviceName][hour] : null;
-                });
 
+            const datasets = serviceNames.map((serviceName, idx) => {
+                const data = hours.map(hour => serviceStatusMap[serviceName][hour] ?? null);
                 const colors = [
                     { bg: 'rgba(199, 164, 108, 0.5)', border: 'rgba(199, 164, 108, 1)' },
                     { bg: 'rgba(76, 175, 80, 0.5)', border: 'rgba(76, 175, 80, 1)' },
@@ -718,22 +714,19 @@
                 };
             });
 
-            // تبدیل اعداد ساعت به فارسی برای نمایش زیباتر
             const persianHours = hours.map(h => toPersianDigits(h));
-
             return { labels: persianHours, datasets };
         }
 
-        // ۲. داده‌های نمودار روزانه (ماه گذشته – همان بازه‌ی موجود در تاریخچه)
+        // ۲. نمودار روزانه (ماه گذشته) با تاریخ‌های شمسی
         function getDailyChartData(history) {
             if (!history || history.length === 0) return { labels: [], datasets: [] };
 
-            // تابع تعیین وضعیت نهایی یک روز (بیشترین تکرار، در صورت تساوی اولویت با بدترین وضعیت)
+            // تابع تجمیع وضعیت روزانه (بیشترین تکرار، در صورت تساوی اولویت با بدترین)
             function aggregateDailyStatus(statuses) {
                 const counts = { inactive: 0, high_load: 0, active: 0 };
                 statuses.forEach(s => counts[s]++);
                 const maxCount = Math.max(counts.inactive, counts.high_load, counts.active);
-                // اولویت: inactive > high_load > active
                 if (counts.inactive === maxCount) return 'inactive';
                 if (counts.high_load === maxCount) return 'high_load';
                 return 'active';
@@ -750,11 +743,10 @@
                 entriesByDateService[key].push(entry.status);
             });
 
-            // استخراج همه‌ی تاریخ‌های منحصربه‌فرد و مرتب
+            // همه تاریخ‌های موجود (مرتب)
             const allDates = [...new Set(history.map(h => h.timestamp.split('T')[0]))].sort();
             const serviceNames = [...new Set(history.map(h => h.service_name))].sort();
 
-            // ساخت دیتاست
             const datasets = serviceNames.map((serviceName, idx) => {
                 const data = allDates.map(date => {
                     const key = `${date}|${serviceName}`;
@@ -762,7 +754,7 @@
                         const dailyStatus = aggregateDailyStatus(entriesByDateService[key]);
                         return statusMap[dailyStatus];
                     }
-                    return null; // اگر روزی داده ندارد، null بگذار (خط وصل نمی‌شود)
+                    return null;
                 });
 
                 const colors = [
@@ -789,27 +781,19 @@
                 };
             });
 
-            // فرمت‌دهی تاریخ‌ها به فارسی (میلادی به فارسی، فقط نمایش روز و ماه)
-            const persianDates = allDates.map(date => {
-                const [year, month, day] = date.split('-');
-                return toPersianDigits(`${month}/${day}`); // مثلاً ۰۲/۰۵
-            });
+            // تبدیل تاریخ‌ها به شمسی و فرمت فارسی
+            const persianDates = allDates.map(date => gregorianToPersianDate(date));
 
             return { labels: persianDates, datasets };
         }
 
-        // --- رندر نهایی نمودارها با داده‌های واقعی ---
+        // --- رندر نمودارها با داده‌های واقعی ---
         function renderRealCharts(history) {
-            if (!history || history.length === 0) {
-                console.warn('تاریخچه‌ای برای نمایش وجود ندارد.');
-                return;
-            }
+            if (!history || history.length === 0) return;
 
             // ۱. نمودار ساعتی
             const hourlyData = getHourlyChartData(history);
             const ctxHourly = document.getElementById('hourlyChart').getContext('2d');
-            
-            // گرادینت برای زیر نمودار (اختیاری)
             const gradientHourly = ctxHourly.createLinearGradient(0, 0, 0, 250);
             gradientHourly.addColorStop(0, 'rgba(199, 164, 108, 0.2)');
             gradientHourly.addColorStop(1, 'rgba(199, 164, 108, 0)');
@@ -878,10 +862,9 @@
                 }
             });
 
-            // ۲. نمودار روزانه
+            // ۲. نمودار روزانه (با تاریخ شمسی)
             const dailyData = getDailyChartData(history);
             const ctxDaily = document.getElementById('dailyChart').getContext('2d');
-            
             const gradientDaily = ctxDaily.createLinearGradient(0, 0, 0, 250);
             gradientDaily.addColorStop(0, 'rgba(199, 164, 108, 0.2)');
             gradientDaily.addColorStop(1, 'rgba(199, 164, 108, 0)');
@@ -951,7 +934,7 @@
             });
         }
 
-        // اجرای اولیه
+        // شروع
         fetchData();
     </script>
 </body>

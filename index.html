@@ -440,6 +440,7 @@
         /* افزودن ارتفاع مشخص برای canvas نمودارها */
         .chart-card canvas {
             height: 250px !important;
+            width: 100% !important;
         }
         
         /* گوشه‌های تکنیکال برای کارت نمودار */
@@ -535,23 +536,24 @@
             <h2 class="section-title">تحلیل و آمار عملکرد</h2>
             <div class="charts-container">
                 <div class="chart-card">
-                    <h3>گزارش وضعیت هفتگی</h3>
-                    <canvas id="weeklyChart"></canvas>
+                    <h3>📊 گزارش وضعیت ساعتی (آخرین روز)</h3>
+                    <canvas id="hourlyChart"></canvas>
                 </div>
                 <div class="chart-card">
-                    <h3>گزارش وضعیت ماهانه</h3>
-                    <canvas id="monthlyChart"></canvas>
+                    <h3>📈 گزارش وضعیت روزانه (ماه گذشته)</h3>
+                    <canvas id="dailyChart"></canvas>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        // --- منطق اصلی (بدون تغییر در هسته، فقط بهبود تمپلیت‌ها) ---
+        // --- منطق اصلی (بهبودیافته برای نمایش نمودارهای واقعی) ---
+        // بدون هیچ داده‌ی جعلی یا شبیه‌سازی – همه‌چیز از data.json واقعی گرفته می‌شود
 
         // تابع تبدیل اعداد انگلیسی به فارسی
         function toPersianDigits(str) {
-            if (!str) return '';
+            if (!str && str !== 0) return '';
             return str.toString().replace(/\d/g, d => '۰۱۲۳۴۵۶۷۸۹'[d]);
         }
 
@@ -574,7 +576,6 @@
                 renderPage(data);
             } catch (error) {
                 console.error('Error fetching data:', error);
-                // نمایش ارور زیباتر
                 document.getElementById('servicesContainer').innerHTML = `
                     <div style="grid-column: 1/-1; text-align:center; padding: 40px; background: rgba(244, 67, 54, 0.1); border: 1px solid var(--danger-color); border-radius: 12px;">
                         <p style="color: var(--danger-color); font-size: 1.1rem; margin-bottom: 10px;">⚠️ خطا در دریافت اطلاعات</p>
@@ -595,10 +596,8 @@
             data.services.forEach((service, index) => {
                 const statusDetails = getStatusDetails(service.status);
                 
-                // انیمیشن با تاخیر برای هر کارت
                 const delay = index * 100;
                 
-                // محاسبه رنگ و عرض نوار پیشرفت
                 let progressColor = '#4CAF50';
                 let progressWidth = '0%';
                 
@@ -610,28 +609,27 @@
                         daysClass = 'text-red';
                         daysText = `${toPersianDigits(Math.abs(service.days_remaining))} روز تاخیر`;
                         progressColor = '#F44336';
-                        progressWidth = '100%'; // بار کامل برای نشان دادن خطر
+                        progressWidth = '100%';
                     } else if (service.days_remaining <= 10) {
                         daysClass = service.days_remaining === 0 ? 'text-orange' : 'text-yellow';
                         progressColor = service.days_remaining === 0 ? '#FF9800' : '#FFC107';
-                        progressWidth = '20%'; // پایین
+                        progressWidth = '20%';
                     } else {
                         daysClass = 'text-green';
-                        progressWidth = '80%'; // بالا
+                        progressWidth = '80%';
                     }
                 } else {
                     daysText = 'نامحدود';
                     daysClass = 'text-green';
-                    progressColor = '#C7A46C'; // رنگ طلایی برای نامحدود
+                    progressColor = '#C7A46C';
                     progressWidth = '100%';
                 }
 
                 const card = document.createElement('div');
                 card.className = 'service-card';
                 card.style.animationDelay = `${delay}ms`;
-                card.style.borderRightColor = statusDetails.color; // رنگ حاشیه سمت راست
+                card.style.borderRightColor = statusDetails.color;
 
-                // استفاده از HTML Template لفظی (Template Literals) برای ساختار بهتر
                 card.innerHTML = `
                     <div class="service-header">
                         <span class="service-name">${service.name}</span>
@@ -657,137 +655,299 @@
                 container.appendChild(card);
             });
 
-            renderCharts(data.history, data.services);
+            // --- رندر نمودارهای واقعی (بدون شبیه‌سازی) ---
+            renderRealCharts(data.history);
         }
 
-        function renderCharts(history, services) {
-            // آماده‌سازی داده‌ها برای نمودار
-            const serviceNames = services.map(s => s.name);
-            
-            // پالت رنگی نمودارها (مربوط به تم)
-            const baseColors = [
-                'rgba(199, 164, 108, 0.5)',  // Primary Gold
-                'rgba(76, 175, 80, 0.5)',   // Green
-                'rgba(33, 150, 243, 0.5)',  // Blue
-                'rgba(156, 39, 176, 0.5)',  // Purple
-                'rgba(255, 152, 0, 0.5)',   // Orange
-                'rgba(0, 188, 212, 0.5)'    // Cyan
-            ];
-            
-            const borderColors = baseColors.map(c => c.replace('0.5', '1'));
+        // ----------------------------------------------
+        // توابع پردازش داده‌های واقعی برای نمودارها
+        // ----------------------------------------------
 
+        // ۱. داده‌های نمودار ساعتی (آخرین روز موجود در تاریخچه)
+        function getHourlyChartData(history) {
+            if (!history || history.length === 0) return { labels: [], datasets: [] };
+
+            // پیدا کردن آخرین تاریخ (بر اساس timestamp)
+            const dates = history.map(h => h.timestamp.split('T')[0]);
+            const latestDate = dates.sort().reverse()[0]; // بزرگترین تاریخ
+            const dayData = history.filter(h => h.timestamp.startsWith(latestDate));
+
+            // استخراج همه‌ی ساعت‌های مرتب‌شده
+            const hours = [...new Set(dayData.map(h => h.time_label))].sort((a, b) => a.localeCompare(b, 'fa', { numeric: true }));
+            
             // نگاشت وضعیت به عدد
             const statusMap = { 'inactive': 0, 'high_load': 1, 'active': 2 };
+            
+            // گروه‌بندی بر اساس نام سرویس
+            const serviceStatusMap = {};
+            dayData.forEach(entry => {
+                if (!serviceStatusMap[entry.service_name]) serviceStatusMap[entry.service_name] = {};
+                serviceStatusMap[entry.service_name][entry.time_label] = statusMap[entry.status];
+            });
 
-            // پردازش داده‌ها
-            const datasets = serviceNames.map((name, index) => {
-                const serviceHistory = history.filter(h => h.service_name === name);
+            const serviceNames = Object.keys(serviceStatusMap).sort();
+            
+            // ساخت دیتاست برای هر سرویس
+            const datasets = serviceNames.map((serviceName, idx) => {
+                // داده برای هر ساعت (به ترتیب hours)
+                const data = hours.map(hour => {
+                    return serviceStatusMap[serviceName][hour] !== undefined ? serviceStatusMap[serviceName][hour] : null;
+                });
+
+                const colors = [
+                    { bg: 'rgba(199, 164, 108, 0.5)', border: 'rgba(199, 164, 108, 1)' },
+                    { bg: 'rgba(76, 175, 80, 0.5)', border: 'rgba(76, 175, 80, 1)' },
+                    { bg: 'rgba(33, 150, 243, 0.5)', border: 'rgba(33, 150, 243, 1)' },
+                    { bg: 'rgba(156, 39, 176, 0.5)', border: 'rgba(156, 39, 176, 1)' },
+                    { bg: 'rgba(255, 152, 0, 0.5)', border: 'rgba(255, 152, 0, 1)' },
+                    { bg: 'rgba(0, 188, 212, 0.5)', border: 'rgba(0, 188, 212, 1)' }
+                ];
+                const colorIndex = idx % colors.length;
+
                 return {
-                    label: name,
-                    data: serviceHistory.map(h => ({
-                        x: h.time_label, // استفاده از time_label به جای timestamp
-                        y: statusMap[h.status] || 0
-                    })),
-                    borderColor: borderColors[index % borderColors.length],
-                    backgroundColor: baseColors[index % baseColors.length],
+                    label: serviceName,
+                    data: data,
+                    borderColor: colors[colorIndex].border,
+                    backgroundColor: colors[colorIndex].bg,
                     borderWidth: 2,
                     fill: true,
-                    tension: 0.4, // انحنای نرم‌تر
-                    pointRadius: 0, // حذف نقاط برای تمیزی بیشتر
-                    pointHoverRadius: 6
+                    tension: 0.4,
+                    pointRadius: 2,
+                    pointHoverRadius: 6,
+                    spanGaps: true
                 };
             });
 
-            // تنظیمات مشترک نمودار
-            const commonOptions = {
-                responsive: true,
-                maintainAspectRatio: false,
-                interaction: {
-                    mode: 'index',
-                    intersect: false,
-                },
-                plugins: {
-                    legend: {
-                        position: 'top',
-                        align: 'end',
-                        labels: { 
-                            color: '#E0E0E0', 
-                            font: { family: 'Vazirmatn', size: 12 },
-                            usePointStyle: true,
-                            boxWidth: 8
-                        }
-                    },
-                    tooltip: {
-                        backgroundColor: 'rgba(30, 30, 30, 0.9)',
-                        titleColor: '#C7A46C',
-                        bodyColor: '#fff',
-                        borderColor: 'rgba(199, 164, 108, 0.3)',
-                        borderWidth: 1,
-                        padding: 10,
-                        displayColors: true,
-                        callbacks: {
-                            label: function(context) {
-                                let label = context.dataset.label || '';
-                                if (label) {
-                                    label += ': ';
-                                }
-                                if (context.parsed.y !== null) {
-                                    const val = context.parsed.y;
-                                    label += (val === 2 ? 'فعال' : (val === 1 ? 'سنگینی بار' : 'غیرفعال'));
-                                }
-                                return label;
-                            }
-                        }
-                    }
-                },
-                scales: {
-                    x: {
-                        type: 'category',
-                        labels: [...new Set(history.map(h => h.time_label))].reverse(), // این قسمت دیگر لازم نیست چون دیتا در x قرار می‌گیرد
-                        ticks: { color: '#888', font: { family: 'Vazirmatn' } },
-                        grid: { color: 'rgba(255,255,255,0.05)', drawBorder: false }
-                    },
-                    y: {
-                        min: -0.2,
-                        max: 2.2,
-                        ticks: {
-                            stepSize: 1,
-                            color: '#888',
-                            font: { family: 'Vazirmatn' },
-                            callback: function(value) {
-                                if (value === 2) return 'فعال';
-                                if (value === 1) return 'سنگینی بار';
-                                if (value === 0) return 'غیرفعال';
-                                return '';
-                            }
-                        },
-                        grid: { color: 'rgba(255,255,255,0.05)', drawBorder: false }
-                    }
-                }
-            };
+            // تبدیل اعداد ساعت به فارسی برای نمایش زیباتر
+            const persianHours = hours.map(h => toPersianDigits(h));
 
-            // ساخت نمودارها
-            const ctxWeekly = document.getElementById('weeklyChart').getContext('2d');
-            const ctxMonthly = document.getElementById('monthlyChart').getContext('2d');
+            return { labels: persianHours, datasets };
+        }
 
-            // گرادینت برای زیر نمودار
-            const gradientWeekly = ctxWeekly.createLinearGradient(0, 0, 0, 400);
-            gradientWeekly.addColorStop(0, 'rgba(199, 164, 108, 0.2)');
-            gradientWeekly.addColorStop(1, 'rgba(199, 164, 108, 0)');
+        // ۲. داده‌های نمودار روزانه (ماه گذشته – همان بازه‌ی موجود در تاریخچه)
+        function getDailyChartData(history) {
+            if (!history || history.length === 0) return { labels: [], datasets: [] };
 
-            // اعمال گرادینت به دیتاست اول (فقط برای زیبایی)
-            if(datasets.length > 0) datasets[0].backgroundColor = gradientWeekly;
+            // تابع تعیین وضعیت نهایی یک روز (بیشترین تکرار، در صورت تساوی اولویت با بدترین وضعیت)
+            function aggregateDailyStatus(statuses) {
+                const counts = { inactive: 0, high_load: 0, active: 0 };
+                statuses.forEach(s => counts[s]++);
+                const maxCount = Math.max(counts.inactive, counts.high_load, counts.active);
+                // اولویت: inactive > high_load > active
+                if (counts.inactive === maxCount) return 'inactive';
+                if (counts.high_load === maxCount) return 'high_load';
+                return 'active';
+            }
 
-            new Chart(ctxWeekly, {
-                type: 'line',
-                data: { datasets: datasets },
-                options: commonOptions
+            const statusMap = { 'inactive': 0, 'high_load': 1, 'active': 2 };
+
+            // گروه‌بندی بر اساس تاریخ و سرویس
+            const entriesByDateService = {};
+            history.forEach(entry => {
+                const date = entry.timestamp.split('T')[0];
+                const key = `${date}|${entry.service_name}`;
+                if (!entriesByDateService[key]) entriesByDateService[key] = [];
+                entriesByDateService[key].push(entry.status);
             });
 
-            new Chart(ctxMonthly, {
+            // استخراج همه‌ی تاریخ‌های منحصربه‌فرد و مرتب
+            const allDates = [...new Set(history.map(h => h.timestamp.split('T')[0]))].sort();
+            const serviceNames = [...new Set(history.map(h => h.service_name))].sort();
+
+            // ساخت دیتاست
+            const datasets = serviceNames.map((serviceName, idx) => {
+                const data = allDates.map(date => {
+                    const key = `${date}|${serviceName}`;
+                    if (entriesByDateService[key]) {
+                        const dailyStatus = aggregateDailyStatus(entriesByDateService[key]);
+                        return statusMap[dailyStatus];
+                    }
+                    return null; // اگر روزی داده ندارد، null بگذار (خط وصل نمی‌شود)
+                });
+
+                const colors = [
+                    { bg: 'rgba(199, 164, 108, 0.5)', border: 'rgba(199, 164, 108, 1)' },
+                    { bg: 'rgba(76, 175, 80, 0.5)', border: 'rgba(76, 175, 80, 1)' },
+                    { bg: 'rgba(33, 150, 243, 0.5)', border: 'rgba(33, 150, 243, 1)' },
+                    { bg: 'rgba(156, 39, 176, 0.5)', border: 'rgba(156, 39, 176, 1)' },
+                    { bg: 'rgba(255, 152, 0, 0.5)', border: 'rgba(255, 152, 0, 1)' },
+                    { bg: 'rgba(0, 188, 212, 0.5)', border: 'rgba(0, 188, 212, 1)' }
+                ];
+                const colorIndex = idx % colors.length;
+
+                return {
+                    label: serviceName,
+                    data: data,
+                    borderColor: colors[colorIndex].border,
+                    backgroundColor: colors[colorIndex].bg,
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.4,
+                    pointRadius: 2,
+                    pointHoverRadius: 6,
+                    spanGaps: false
+                };
+            });
+
+            // فرمت‌دهی تاریخ‌ها به فارسی (میلادی به فارسی، فقط نمایش روز و ماه)
+            const persianDates = allDates.map(date => {
+                const [year, month, day] = date.split('-');
+                return toPersianDigits(`${month}/${day}`); // مثلاً ۰۲/۰۵
+            });
+
+            return { labels: persianDates, datasets };
+        }
+
+        // --- رندر نهایی نمودارها با داده‌های واقعی ---
+        function renderRealCharts(history) {
+            if (!history || history.length === 0) {
+                console.warn('تاریخچه‌ای برای نمایش وجود ندارد.');
+                return;
+            }
+
+            // ۱. نمودار ساعتی
+            const hourlyData = getHourlyChartData(history);
+            const ctxHourly = document.getElementById('hourlyChart').getContext('2d');
+            
+            // گرادینت برای زیر نمودار (اختیاری)
+            const gradientHourly = ctxHourly.createLinearGradient(0, 0, 0, 250);
+            gradientHourly.addColorStop(0, 'rgba(199, 164, 108, 0.2)');
+            gradientHourly.addColorStop(1, 'rgba(199, 164, 108, 0)');
+            if (hourlyData.datasets.length > 0) {
+                hourlyData.datasets[0].backgroundColor = gradientHourly;
+            }
+
+            new Chart(ctxHourly, {
                 type: 'line',
-                data: { datasets: datasets },
-                options: commonOptions
+                data: {
+                    labels: hourlyData.labels,
+                    datasets: hourlyData.datasets
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            align: 'end',
+                            labels: { color: '#E0E0E0', font: { family: 'Vazirmatn', size: 12 }, usePointStyle: true, boxWidth: 8 }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(30, 30, 30, 0.9)',
+                            titleColor: '#C7A46C',
+                            bodyColor: '#fff',
+                            borderColor: 'rgba(199, 164, 108, 0.3)',
+                            borderWidth: 1,
+                            padding: 10,
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) label += ': ';
+                                    const val = context.parsed.y;
+                                    if (val === 2) label += 'فعال';
+                                    else if (val === 1) label += 'سنگینی بار';
+                                    else if (val === 0) label += 'غیرفعال';
+                                    else label += 'نامشخص';
+                                    return label;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            ticks: { color: '#888', font: { family: 'Vazirmatn' } },
+                            grid: { color: 'rgba(255,255,255,0.05)', drawBorder: false }
+                        },
+                        y: {
+                            min: -0.2,
+                            max: 2.2,
+                            ticks: {
+                                stepSize: 1,
+                                color: '#888',
+                                font: { family: 'Vazirmatn' },
+                                callback: function(value) {
+                                    if (value === 2) return 'فعال';
+                                    if (value === 1) return 'سنگینی بار';
+                                    if (value === 0) return 'غیرفعال';
+                                    return '';
+                                }
+                            },
+                            grid: { color: 'rgba(255,255,255,0.05)', drawBorder: false }
+                        }
+                    }
+                }
+            });
+
+            // ۲. نمودار روزانه
+            const dailyData = getDailyChartData(history);
+            const ctxDaily = document.getElementById('dailyChart').getContext('2d');
+            
+            const gradientDaily = ctxDaily.createLinearGradient(0, 0, 0, 250);
+            gradientDaily.addColorStop(0, 'rgba(199, 164, 108, 0.2)');
+            gradientDaily.addColorStop(1, 'rgba(199, 164, 108, 0)');
+            if (dailyData.datasets.length > 0) {
+                dailyData.datasets[0].backgroundColor = gradientDaily;
+            }
+
+            new Chart(ctxDaily, {
+                type: 'line',
+                data: {
+                    labels: dailyData.labels,
+                    datasets: dailyData.datasets
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            align: 'end',
+                            labels: { color: '#E0E0E0', font: { family: 'Vazirmatn', size: 12 }, usePointStyle: true, boxWidth: 8 }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(30, 30, 30, 0.9)',
+                            titleColor: '#C7A46C',
+                            bodyColor: '#fff',
+                            borderColor: 'rgba(199, 164, 108, 0.3)',
+                            borderWidth: 1,
+                            padding: 10,
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) label += ': ';
+                                    const val = context.parsed.y;
+                                    if (val === 2) label += 'فعال';
+                                    else if (val === 1) label += 'سنگینی بار';
+                                    else if (val === 0) label += 'غیرفعال';
+                                    else label += 'نامشخص';
+                                    return label;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            ticks: { color: '#888', font: { family: 'Vazirmatn' } },
+                            grid: { color: 'rgba(255,255,255,0.05)', drawBorder: false }
+                        },
+                        y: {
+                            min: -0.2,
+                            max: 2.2,
+                            ticks: {
+                                stepSize: 1,
+                                color: '#888',
+                                font: { family: 'Vazirmatn' },
+                                callback: function(value) {
+                                    if (value === 2) return 'فعال';
+                                    if (value === 1) return 'سنگینی بار';
+                                    if (value === 0) return 'غیرفعال';
+                                    return '';
+                                }
+                            },
+                            grid: { color: 'rgba(255,255,255,0.05)', drawBorder: false }
+                        }
+                    }
+                }
             });
         }
 

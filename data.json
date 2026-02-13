@@ -1,5 +1,5 @@
 {
-  "last_update": "1404/11/24 20:42",
+  "last_update": "1404/11/24 21:27",
   "services": [
     {
       "name": "سرویس مرکزی",
@@ -19,10 +19,10 @@
     },
     {
       "name": "سرویس سینا",
-      "status": "inactive",
+      "status": "active",
       "renewal_date": "1404/12/22",
       "days_remaining": 28,
-      "message": "سرویس غیرفعال است. لطفاً به پشتیبانی مراجعه کنید.",
+      "message": "تبریک! سرویس شما با موفقیت در حال فعالیت است.",
       "url": "https://sinafam.halimash.workers.dev/login"
     },
     {
@@ -1532,6 +1532,30 @@
     {
       "timestamp": "2026-02-13T20:42:15.237650+03:30",
       "time_label": "20:42",
+      "service_name": "سرویس امید",
+      "status": "active"
+    },
+    {
+      "timestamp": "2026-02-13T21:27:45.426256+03:30",
+      "time_label": "21:27",
+      "service_name": "سرویس مرکزی",
+      "status": "active"
+    },
+    {
+      "timestamp": "2026-02-13T21:27:45.426256+03:30",
+      "time_label": "21:27",
+      "service_name": "سرویس سلطان",
+      "status": "active"
+    },
+    {
+      "timestamp": "2026-02-13T21:27:45.426256+03:30",
+      "time_label": "21:27",
+      "service_name": "سرویس سینا",
+      "status": "active"
+    },
+    {
+      "timestamp": "2026-02-13T21:27:45.426256+03:30",
+      "time_label": "21:27",
       "service_name": "سرویس امید",
       "status": "active"
     }

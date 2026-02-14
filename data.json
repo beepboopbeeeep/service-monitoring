@@ -1,5 +1,5 @@
 {
-  "last_update": "1404/11/25 07:54",
+  "last_update": "1404/11/25 08:58",
   "services": [
     {
       "name": "سرویس مرکزی",
@@ -1844,6 +1844,30 @@
     {
       "timestamp": "2026-02-14T07:54:49.894298+03:30",
       "time_label": "07:54",
+      "service_name": "سرویس امید",
+      "status": "active"
+    },
+    {
+      "timestamp": "2026-02-14T08:58:18.955648+03:30",
+      "time_label": "08:58",
+      "service_name": "سرویس مرکزی",
+      "status": "active"
+    },
+    {
+      "timestamp": "2026-02-14T08:58:18.955648+03:30",
+      "time_label": "08:58",
+      "service_name": "سرویس سلطان",
+      "status": "active"
+    },
+    {
+      "timestamp": "2026-02-14T08:58:18.955648+03:30",
+      "time_label": "08:58",
+      "service_name": "سرویس سینا",
+      "status": "active"
+    },
+    {
+      "timestamp": "2026-02-14T08:58:18.955648+03:30",
+      "time_label": "08:58",
       "service_name": "سرویس امید",
       "status": "active"
     }

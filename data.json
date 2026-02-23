@@ -1,5 +1,5 @@
 {
-  "last_update": "1404/12/05 00:28",
+  "last_update": "1404/12/05 01:18",
   "services": [
     {
       "name": "سرویس مرکزی",
@@ -11,10 +11,10 @@
     },
     {
       "name": "سرویس سلطان",
-      "status": "inactive",
+      "status": "active",
       "renewal_date": "1404/12/21",
       "days_remaining": 17,
-      "message": "سرویس غیرفعال است. لطفاً به پشتیبانی مراجعه کنید.",
+      "message": "تبریک! سرویس شما با موفقیت در حال فعالیت است.",
       "url": "https://hitmeintheeyes.judiopu.workers.dev/login"
     },
     {
@@ -9692,6 +9692,30 @@
     {
       "timestamp": "2026-02-24T00:28:58.522205+03:30",
       "time_label": "00:28",
+      "service_name": "سرویس امید",
+      "status": "active"
+    },
+    {
+      "timestamp": "2026-02-24T01:18:59.270440+03:30",
+      "time_label": "01:18",
+      "service_name": "سرویس مرکزی",
+      "status": "active"
+    },
+    {
+      "timestamp": "2026-02-24T01:18:59.270440+03:30",
+      "time_label": "01:18",
+      "service_name": "سرویس سلطان",
+      "status": "active"
+    },
+    {
+      "timestamp": "2026-02-24T01:18:59.270440+03:30",
+      "time_label": "01:18",
+      "service_name": "سرویس سینا",
+      "status": "active"
+    },
+    {
+      "timestamp": "2026-02-24T01:18:59.270440+03:30",
+      "time_label": "01:18",
       "service_name": "سرویس امید",
       "status": "active"
     }

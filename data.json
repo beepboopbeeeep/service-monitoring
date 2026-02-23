@@ -1,5 +1,5 @@
 {
-  "last_update": "1404/12/04 20:32",
+  "last_update": "1404/12/04 21:37",
   "services": [
     {
       "name": "سرویس مرکزی",
@@ -11,18 +11,18 @@
     },
     {
       "name": "سرویس سلطان",
-      "status": "active",
+      "status": "inactive",
       "renewal_date": "1404/12/21",
       "days_remaining": 17,
-      "message": "تبریک! سرویس شما با موفقیت در حال فعالیت است.",
+      "message": "سرویس غیرفعال است. لطفاً به پشتیبانی مراجعه کنید.",
       "url": "https://hitmeintheeyes.judiopu.workers.dev/login"
     },
     {
       "name": "سرویس سینا",
-      "status": "active",
+      "status": "inactive",
       "renewal_date": "1404/12/22",
       "days_remaining": 18,
-      "message": "تبریک! سرویس شما با موفقیت در حال فعالیت است.",
+      "message": "سرویس غیرفعال است. لطفاً به پشتیبانی مراجعه کنید.",
       "url": "https://sinafam.halimash.workers.dev/login"
     },
     {
@@ -9596,6 +9596,30 @@
     {
       "timestamp": "2026-02-23T20:32:45.790172+03:30",
       "time_label": "20:32",
+      "service_name": "سرویس امید",
+      "status": "active"
+    },
+    {
+      "timestamp": "2026-02-23T21:37:36.168923+03:30",
+      "time_label": "21:37",
+      "service_name": "سرویس مرکزی",
+      "status": "active"
+    },
+    {
+      "timestamp": "2026-02-23T21:37:36.168923+03:30",
+      "time_label": "21:37",
+      "service_name": "سرویس سلطان",
+      "status": "inactive"
+    },
+    {
+      "timestamp": "2026-02-23T21:37:36.168923+03:30",
+      "time_label": "21:37",
+      "service_name": "سرویس سینا",
+      "status": "inactive"
+    },
+    {
+      "timestamp": "2026-02-23T21:37:36.168923+03:30",
+      "time_label": "21:37",
       "service_name": "سرویس امید",
       "status": "active"
     }

@@ -1,12 +1,12 @@
 {
-  "last_update": "1404/12/04 17:42",
+  "last_update": "1404/12/04 18:37",
   "services": [
     {
       "name": "سرویس مرکزی",
-      "status": "active",
+      "status": "inactive",
       "renewal_date": "نامحدود",
       "days_remaining": null,
-      "message": "تبریک! سرویس شما با موفقیت در حال فعالیت است.",
+      "message": "سرویس غیرفعال است. لطفاً به پشتیبانی مراجعه کنید.",
       "url": "https://tellmeimright.taxyvy.workers.dev/login"
     },
     {
@@ -9524,6 +9524,30 @@
     {
       "timestamp": "2026-02-23T17:42:30.992117+03:30",
       "time_label": "17:42",
+      "service_name": "سرویس امید",
+      "status": "active"
+    },
+    {
+      "timestamp": "2026-02-23T18:37:39.235198+03:30",
+      "time_label": "18:37",
+      "service_name": "سرویس مرکزی",
+      "status": "inactive"
+    },
+    {
+      "timestamp": "2026-02-23T18:37:39.235198+03:30",
+      "time_label": "18:37",
+      "service_name": "سرویس سلطان",
+      "status": "active"
+    },
+    {
+      "timestamp": "2026-02-23T18:37:39.235198+03:30",
+      "time_label": "18:37",
+      "service_name": "سرویس سینا",
+      "status": "active"
+    },
+    {
+      "timestamp": "2026-02-23T18:37:39.235198+03:30",
+      "time_label": "18:37",
       "service_name": "سرویس امید",
       "status": "active"
     }

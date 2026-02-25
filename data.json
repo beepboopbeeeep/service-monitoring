@@ -1,12 +1,12 @@
 {
-  "last_update": "1404/12/07 00:09",
+  "last_update": "1404/12/07 00:35",
   "services": [
     {
       "name": "سرویس مرکزی",
-      "status": "high_load",
+      "status": "inactive",
       "renewal_date": "نامحدود",
       "days_remaining": null,
-      "message": "سنگینی بار روی سرور. نگران نباشید، تا ساعت ۳:۳۰ تا ۴ بامداد به وقت ایران منتظر بمانید.",
+      "message": "سرویس غیرفعال است. لطفاً به پشتیبانی مراجعه کنید.",
       "url": "https://tellmeimright.taxyvy.workers.dev/login"
     },
     {
@@ -19,10 +19,10 @@
     },
     {
       "name": "سرویس سینا",
-      "status": "active",
+      "status": "inactive",
       "renewal_date": "1404/12/22",
       "days_remaining": 16,
-      "message": "تبریک! سرویس شما با موفقیت در حال فعالیت است.",
+      "message": "سرویس غیرفعال است. لطفاً به پشتیبانی مراجعه کنید.",
       "url": "https://sinafam.halimash.workers.dev/login"
     },
     {
@@ -10868,6 +10868,30 @@
     {
       "timestamp": "2026-02-26T00:09:55.634093+03:30",
       "time_label": "00:09",
+      "service_name": "سرویس امید",
+      "status": "active"
+    },
+    {
+      "timestamp": "2026-02-26T00:35:44.957274+03:30",
+      "time_label": "00:35",
+      "service_name": "سرویس مرکزی",
+      "status": "inactive"
+    },
+    {
+      "timestamp": "2026-02-26T00:35:44.957274+03:30",
+      "time_label": "00:35",
+      "service_name": "سرویس سلطان",
+      "status": "active"
+    },
+    {
+      "timestamp": "2026-02-26T00:35:44.957274+03:30",
+      "time_label": "00:35",
+      "service_name": "سرویس سینا",
+      "status": "inactive"
+    },
+    {
+      "timestamp": "2026-02-26T00:35:44.957274+03:30",
+      "time_label": "00:35",
       "service_name": "سرویس امید",
       "status": "active"
     }

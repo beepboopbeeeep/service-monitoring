@@ -1,12 +1,12 @@
 {
-  "last_update": "1404/12/06 23:29",
+  "last_update": "1404/12/07 00:09",
   "services": [
     {
       "name": "سرویس مرکزی",
-      "status": "active",
+      "status": "high_load",
       "renewal_date": "نامحدود",
       "days_remaining": null,
-      "message": "تبریک! سرویس شما با موفقیت در حال فعالیت است.",
+      "message": "سنگینی بار روی سرور. نگران نباشید، تا ساعت ۳:۳۰ تا ۴ بامداد به وقت ایران منتظر بمانید.",
       "url": "https://tellmeimright.taxyvy.workers.dev/login"
     },
     {
@@ -10844,6 +10844,30 @@
     {
       "timestamp": "2026-02-25T23:29:07.454767+03:30",
       "time_label": "23:29",
+      "service_name": "سرویس امید",
+      "status": "active"
+    },
+    {
+      "timestamp": "2026-02-26T00:09:55.634093+03:30",
+      "time_label": "00:09",
+      "service_name": "سرویس مرکزی",
+      "status": "high_load"
+    },
+    {
+      "timestamp": "2026-02-26T00:09:55.634093+03:30",
+      "time_label": "00:09",
+      "service_name": "سرویس سلطان",
+      "status": "active"
+    },
+    {
+      "timestamp": "2026-02-26T00:09:55.634093+03:30",
+      "time_label": "00:09",
+      "service_name": "سرویس سینا",
+      "status": "active"
+    },
+    {
+      "timestamp": "2026-02-26T00:09:55.634093+03:30",
+      "time_label": "00:09",
       "service_name": "سرویس امید",
       "status": "active"
     }

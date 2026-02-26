@@ -1,5 +1,5 @@
 {
-  "last_update": "1404/12/08 02:25",
+  "last_update": "1404/12/08 02:53",
   "services": [
     {
       "name": "سرویس مرکزی",
@@ -27,10 +27,10 @@
     },
     {
       "name": "سرویس امید",
-      "status": "active",
+      "status": "high_load",
       "renewal_date": "1404/12/22",
       "days_remaining": 15,
-      "message": "تبریک! سرویس شما با موفقیت در حال فعالیت است.",
+      "message": "سنگینی بار روی سرور. نگران نباشید، تا ساعت ۳:۳۰ تا ۴ بامداد به وقت ایران منتظر بمانید.",
       "url": "https://omid.mastmusir.workers.dev/login"
     }
   ],
@@ -11590,6 +11590,30 @@
       "time_label": "02:25",
       "service_name": "سرویس امید",
       "status": "active"
+    },
+    {
+      "timestamp": "2026-02-27T02:53:04.523919+03:30",
+      "time_label": "02:53",
+      "service_name": "سرویس مرکزی",
+      "status": "active"
+    },
+    {
+      "timestamp": "2026-02-27T02:53:04.523919+03:30",
+      "time_label": "02:53",
+      "service_name": "سرویس سلطان",
+      "status": "active"
+    },
+    {
+      "timestamp": "2026-02-27T02:53:04.523919+03:30",
+      "time_label": "02:53",
+      "service_name": "سرویس سینا",
+      "status": "active"
+    },
+    {
+      "timestamp": "2026-02-27T02:53:04.523919+03:30",
+      "time_label": "02:53",
+      "service_name": "سرویس امید",
+      "status": "high_load"
     }
   ]
 }

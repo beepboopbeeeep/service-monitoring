@@ -1,5 +1,5 @@
 {
-  "last_update": "1405/01/10 20:10",
+  "last_update": "1405/01/10 21:09",
   "services": [
     {
       "name": "سرویس مرکزی",
@@ -27,39 +27,15 @@
     },
     {
       "name": "سرویس امید",
-      "status": "active",
+      "status": "inactive",
       "renewal_date": "1404/12/22",
       "days_remaining": -17,
-      "message": "تبریک! سرویس شما با موفقیت در حال فعالیت است.",
+      "message": "سرویس غیرفعال است. لطفاً به پشتیبانی مراجعه کنید.",
       "url": "https://omid.mastmusir.workers.dev/login"
     }
   ],
   "history": [
     {
-      "timestamp": "2026-02-23T01:46:39.760087+03:30",
-      "time_label": "01:46",
-      "service_name": "سرویس مرکزی",
-      "status": "active"
-    },
-    {
-      "timestamp": "2026-02-23T01:46:39.760087+03:30",
-      "time_label": "01:46",
-      "service_name": "سرویس سلطان",
-      "status": "active"
-    },
-    {
-      "timestamp": "2026-02-23T01:46:39.760087+03:30",
-      "time_label": "01:46",
-      "service_name": "سرویس سینا",
-      "status": "active"
-    },
-    {
-      "timestamp": "2026-02-23T01:46:39.760087+03:30",
-      "time_label": "01:46",
-      "service_name": "سرویس امید",
-      "status": "active"
-    },
-    {
       "timestamp": "2026-02-23T02:15:52.290231+03:30",
       "time_label": "02:15",
       "service_name": "سرویس مرکزی",
@@ -27034,6 +27010,30 @@
       "time_label": "20:10",
       "service_name": "سرویس امید",
       "status": "active"
+    },
+    {
+      "timestamp": "2026-03-30T21:09:08.546370+03:30",
+      "time_label": "21:09",
+      "service_name": "سرویس مرکزی",
+      "status": "active"
+    },
+    {
+      "timestamp": "2026-03-30T21:09:08.546370+03:30",
+      "time_label": "21:09",
+      "service_name": "سرویس سلطان",
+      "status": "active"
+    },
+    {
+      "timestamp": "2026-03-30T21:09:08.546370+03:30",
+      "time_label": "21:09",
+      "service_name": "سرویس سینا",
+      "status": "active"
+    },
+    {
+      "timestamp": "2026-03-30T21:09:08.546370+03:30",
+      "time_label": "21:09",
+      "service_name": "سرویس امید",
+      "status": "inactive"
     }
   ]
 }

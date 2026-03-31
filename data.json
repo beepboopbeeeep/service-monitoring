@@ -1,5 +1,5 @@
 {
-  "last_update": "1405/01/11 21:37",
+  "last_update": "1405/01/11 22:47",
   "services": [
     {
       "name": "سرویس مرکزی",
@@ -11,10 +11,10 @@
     },
     {
       "name": "سرویس سلطان",
-      "status": "active",
+      "status": "inactive",
       "renewal_date": "1404/12/21",
       "days_remaining": -19,
-      "message": "تبریک! سرویس شما با موفقیت در حال فعالیت است.",
+      "message": "سرویس غیرفعال است. لطفاً به پشتیبانی مراجعه کنید.",
       "url": "https://hitmeintheeyes.judiopu.workers.dev/login"
     },
     {
@@ -36,30 +36,6 @@
   ],
   "history": [
     {
-      "timestamp": "2026-02-24T00:28:58.522205+03:30",
-      "time_label": "00:28",
-      "service_name": "سرویس مرکزی",
-      "status": "active"
-    },
-    {
-      "timestamp": "2026-02-24T00:28:58.522205+03:30",
-      "time_label": "00:28",
-      "service_name": "سرویس سلطان",
-      "status": "inactive"
-    },
-    {
-      "timestamp": "2026-02-24T00:28:58.522205+03:30",
-      "time_label": "00:28",
-      "service_name": "سرویس سینا",
-      "status": "active"
-    },
-    {
-      "timestamp": "2026-02-24T00:28:58.522205+03:30",
-      "time_label": "00:28",
-      "service_name": "سرویس امید",
-      "status": "active"
-    },
-    {
       "timestamp": "2026-02-24T01:18:59.270440+03:30",
       "time_label": "01:18",
       "service_name": "سرویس مرکزی",
@@ -27032,6 +27008,30 @@
     {
       "timestamp": "2026-03-31T21:37:32.038234+03:30",
       "time_label": "21:37",
+      "service_name": "سرویس امید",
+      "status": "active"
+    },
+    {
+      "timestamp": "2026-03-31T22:47:08.490462+03:30",
+      "time_label": "22:47",
+      "service_name": "سرویس مرکزی",
+      "status": "active"
+    },
+    {
+      "timestamp": "2026-03-31T22:47:08.490462+03:30",
+      "time_label": "22:47",
+      "service_name": "سرویس سلطان",
+      "status": "inactive"
+    },
+    {
+      "timestamp": "2026-03-31T22:47:08.490462+03:30",
+      "time_label": "22:47",
+      "service_name": "سرویس سینا",
+      "status": "active"
+    },
+    {
+      "timestamp": "2026-03-31T22:47:08.490462+03:30",
+      "time_label": "22:47",
       "service_name": "سرویس امید",
       "status": "active"
     }

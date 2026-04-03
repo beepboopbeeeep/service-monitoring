@@ -1,12 +1,12 @@
 {
-  "last_update": "1405/01/14 18:39",
+  "last_update": "1405/01/14 19:22",
   "services": [
     {
       "name": "سرویس مرکزی",
-      "status": "active",
+      "status": "inactive",
       "renewal_date": "نامحدود",
       "days_remaining": null,
-      "message": "تبریک! سرویس شما با موفقیت در حال فعالیت است.",
+      "message": "سرویس غیرفعال است. لطفاً به پشتیبانی مراجعه کنید.",
       "url": "https://tellmeimright.taxyvy.workers.dev/login"
     },
     {
@@ -36,30 +36,6 @@
   ],
   "history": [
     {
-      "timestamp": "2026-02-26T16:16:11.025128+03:30",
-      "time_label": "16:16",
-      "service_name": "سرویس مرکزی",
-      "status": "active"
-    },
-    {
-      "timestamp": "2026-02-26T16:16:11.025128+03:30",
-      "time_label": "16:16",
-      "service_name": "سرویس سلطان",
-      "status": "active"
-    },
-    {
-      "timestamp": "2026-02-26T16:16:11.025128+03:30",
-      "time_label": "16:16",
-      "service_name": "سرویس سینا",
-      "status": "active"
-    },
-    {
-      "timestamp": "2026-02-26T16:16:11.025128+03:30",
-      "time_label": "16:16",
-      "service_name": "سرویس امید",
-      "status": "active"
-    },
-    {
       "timestamp": "2026-02-26T17:29:21.300655+03:30",
       "time_label": "17:29",
       "service_name": "سرویس مرکزی",
@@ -27032,6 +27008,30 @@
     {
       "timestamp": "2026-04-03T18:39:31.470040+03:30",
       "time_label": "18:39",
+      "service_name": "سرویس امید",
+      "status": "active"
+    },
+    {
+      "timestamp": "2026-04-03T19:22:40.218970+03:30",
+      "time_label": "19:22",
+      "service_name": "سرویس مرکزی",
+      "status": "inactive"
+    },
+    {
+      "timestamp": "2026-04-03T19:22:40.218970+03:30",
+      "time_label": "19:22",
+      "service_name": "سرویس سلطان",
+      "status": "active"
+    },
+    {
+      "timestamp": "2026-04-03T19:22:40.218970+03:30",
+      "time_label": "19:22",
+      "service_name": "سرویس سینا",
+      "status": "active"
+    },
+    {
+      "timestamp": "2026-04-03T19:22:40.218970+03:30",
+      "time_label": "19:22",
       "service_name": "سرویس امید",
       "status": "active"
     }

@@ -1,5 +1,5 @@
 {
-  "last_update": "1405/04/30 18:18",
+  "last_update": "1405/04/30 19:37",
   "services": [
     {
       "name": "سرویس مرکزی",
@@ -36,30 +36,6 @@
   ],
   "history": [
     {
-      "timestamp": "2026-04-23T03:33:39.241320+03:30",
-      "time_label": "03:33",
-      "service_name": "سرویس مرکزی",
-      "status": "active"
-    },
-    {
-      "timestamp": "2026-04-23T03:33:39.241320+03:30",
-      "time_label": "03:33",
-      "service_name": "سرویس سلطان",
-      "status": "active"
-    },
-    {
-      "timestamp": "2026-04-23T03:33:39.241320+03:30",
-      "time_label": "03:33",
-      "service_name": "سرویس سینا",
-      "status": "active"
-    },
-    {
-      "timestamp": "2026-04-23T03:33:39.241320+03:30",
-      "time_label": "03:33",
-      "service_name": "سرویس امید",
-      "status": "active"
-    },
-    {
       "timestamp": "2026-04-23T07:11:36.156685+03:30",
       "time_label": "07:11",
       "service_name": "سرویس مرکزی",
@@ -27032,6 +27008,30 @@
     {
       "timestamp": "2026-07-21T18:18:21.926960+03:30",
       "time_label": "18:18",
+      "service_name": "سرویس امید",
+      "status": "active"
+    },
+    {
+      "timestamp": "2026-07-21T19:37:49.063952+03:30",
+      "time_label": "19:37",
+      "service_name": "سرویس مرکزی",
+      "status": "active"
+    },
+    {
+      "timestamp": "2026-07-21T19:37:49.063952+03:30",
+      "time_label": "19:37",
+      "service_name": "سرویس سلطان",
+      "status": "active"
+    },
+    {
+      "timestamp": "2026-07-21T19:37:49.063952+03:30",
+      "time_label": "19:37",
+      "service_name": "سرویس سینا",
+      "status": "active"
+    },
+    {
+      "timestamp": "2026-07-21T19:37:49.063952+03:30",
+      "time_label": "19:37",
       "service_name": "سرویس امید",
       "status": "active"
     }

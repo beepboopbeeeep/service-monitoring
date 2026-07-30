@@ -1,0 +1,71 @@
+# ==========================================
+# Cloudflare Worker Configuration
+# ==========================================
+
+name = "server-monitor-panel"
+main = "worker.js"
+compatibility_date = "2024-01-01"
+
+# ==========================================
+# KV Namespace Binding
+# ==========================================
+# بعد از ساخت KV namespace در Cloudflare Dashboard،
+# ID را کپی کرده و در خط زیر جایگزین کنید
+# دستور ساخت KV: wrangler kv:namespace create "MONITOR_DATA"
+
+[[kv_namespaces]]
+binding = "MONITOR_DATA"
+id = "YOUR_KV_NAMESPACE_ID_HERE"
+preview_id = "YOUR_PREVIEW_KV_NAMESPACE_ID_HERE"
+
+# ==========================================
+# Environment Variables / Secrets
+# ==========================================
+# این مقادیر را با دستورات زیر تنظیم کنید:
+# wrangler secret put ADMIN_PASSWORD
+# (رمز عبور ادمین را وارد کنید)
+
+# [vars]
+# می‌توانید متغیرهای محیطی دیگر را اینجا اضافه کنید
+
+# ==========================================
+# Scheduled Triggers (Cron Jobs)
+# ==========================================
+# اجرای خودکار هر ساعت برای چک کردن سرورها
+# برای تغییر زمان‌بندی، الگوی cron را ویرایش کنید
+
+[triggers]
+crons = ["0 * * * *"]  # هر ساعت در دقیقه 0
+
+# الگوهای نمونه:
+# "* * * * *"        - هر دقیقه
+# "0 */2 * * *"      - هر 2 ساعت
+# "0 0 * * *"        - هر روز نیمه شب
+# "0 */6 * * *"      - هر 6 ساعت
+# "30 * * * *"       - هر ساعت در دقیقه 30
+
+# ==========================================
+# Deployment Instructions
+# ==========================================
+# 
+# 1. نصب Wrangler CLI:
+#    npm install -g wrangler
+#
+# 2. ورود به Cloudflare:
+#    wrangler login
+#
+# 3. ساخت KV Namespace:
+#    wrangler kv:namespace create "MONITOR_DATA"
+#
+# 4. کپی کردن ID خروجی به این فایل (بخش kv_namespaces)
+#
+# 5. تنظیم رمز عبور ادمین:
+#    wrangler secret put ADMIN_PASSWORD
+#
+# 6. دیپلوی کردن Worker:
+#    wrangler deploy
+#
+# 7. دسترسی به پنل:
+#    https://server-monitor-panel.<your-subdomain>.workers.dev
+#
+# ==========================================

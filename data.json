@@ -1,5 +1,5 @@
 {
-  "last_update": "1405/05/20 03:04",
+  "last_update": "1405/05/20 03:33",
   "services": [
     {
       "name": "سرویس مرکزی",
@@ -13,7 +13,7 @@
       "name": "سرویس سلطان",
       "status": "active",
       "renewal_date": "1404/12/21",
-      "days_remaining": -151,
+      "days_remaining": -152,
       "message": "تبریک! سرویس شما با موفقیت در حال فعالیت است.",
       "url": "https://hitmeintheeyes.judiopu.workers.dev/login"
     },
@@ -21,7 +21,7 @@
       "name": "سرویس سینا",
       "status": "active",
       "renewal_date": "1404/12/22",
-      "days_remaining": -150,
+      "days_remaining": -151,
       "message": "تبریک! سرویس شما با موفقیت در حال فعالیت است.",
       "url": "https://sinafam.halimash.workers.dev/login"
     },
@@ -29,37 +29,13 @@
       "name": "سرویس امید",
       "status": "active",
       "renewal_date": "1404/12/22",
-      "days_remaining": -150,
+      "days_remaining": -151,
       "message": "تبریک! سرویس شما با موفقیت در حال فعالیت است.",
       "url": "https://omid.mastmusir.workers.dev/login"
     }
   ],
   "history": [
     {
-      "timestamp": "2026-05-14T10:53:17.004683+03:30",
-      "time_label": "10:53",
-      "service_name": "سرویس مرکزی",
-      "status": "active"
-    },
-    {
-      "timestamp": "2026-05-14T10:53:17.004683+03:30",
-      "time_label": "10:53",
-      "service_name": "سرویس سلطان",
-      "status": "active"
-    },
-    {
-      "timestamp": "2026-05-14T10:53:17.004683+03:30",
-      "time_label": "10:53",
-      "service_name": "سرویس سینا",
-      "status": "active"
-    },
-    {
-      "timestamp": "2026-05-14T10:53:17.004683+03:30",
-      "time_label": "10:53",
-      "service_name": "سرویس امید",
-      "status": "active"
-    },
-    {
       "timestamp": "2026-05-14T13:12:46.741512+03:30",
       "time_label": "13:12",
       "service_name": "سرویس مرکزی",
@@ -27032,6 +27008,30 @@
     {
       "timestamp": "2026-08-11T03:04:37.178513+03:30",
       "time_label": "03:04",
+      "service_name": "سرویس امید",
+      "status": "active"
+    },
+    {
+      "timestamp": "2026-08-11T03:33:46.914629+03:30",
+      "time_label": "03:33",
+      "service_name": "سرویس مرکزی",
+      "status": "active"
+    },
+    {
+      "timestamp": "2026-08-11T03:33:46.914629+03:30",
+      "time_label": "03:33",
+      "service_name": "سرویس سلطان",
+      "status": "active"
+    },
+    {
+      "timestamp": "2026-08-11T03:33:46.914629+03:30",
+      "time_label": "03:33",
+      "service_name": "سرویس سینا",
+      "status": "active"
+    },
+    {
+      "timestamp": "2026-08-11T03:33:46.914629+03:30",
+      "time_label": "03:33",
       "service_name": "سرویس امید",
       "status": "active"
     }
